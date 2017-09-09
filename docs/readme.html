@@ -1,0 +1,739 @@
+<html>
+<head>
+    <title>GNUitar - A Free Guitar Processor Software</title>
+</head>
+<style type="text/css"><!--
+dl {
+    margin-left: 3em;
+}
+dt {
+    font-weight: bold;
+}
+dd {
+    margin-bottom: 0.5em;
+}
+h1 {
+    border-bottom: 2px dashed gray;
+}
+
+--></style>
+<body>
+<h1 style="text-align: center; border-bottom: none; margin-top: 1em">
+          <strong>GNUitar</strong> &mdash; a free guitar processor software
+</h1>
+<p style="text-align: center; font-style: italic; margin-bottom: 2em">By Max Rudensky, Ciulei Bogdan, Antti S. Lankila and Vasily Khoruzhick</p>
+<h1><a name=about>Introduction</a></h1>
+
+<p>
+    GNUitar is a cross-platform real-time sound effects software that allows 
+    you to use your computer as a low-latency effect processor. It has GTK+ based 
+    interface. It can be compiled on any flavor of Unix that has
+    GTK+ 1.2, 2.x, pthreads and JACK, ALSA or OSS sound drivers.
+    Windows version can be compiled with MinGW and MS Visual Studio.
+</p>
+<p>
+    GNUitar contains all typical guitar effects, including chorus, phaser, tube amp
+    simulation, overdrive distortion, wah, reverb, etc. Additionally,
+    GNUitar supports MIDI devices for switching between effect presets and
+    wah control. One device tested and known to work is Roland's FC-200.
+    Wah center frequency can be controlled through any pitch bend control or
+    any variable controller. (MIDI support is currently Linux ALSA/JACK only.)
+</p>
+
+<p>
+    GNUitar is pronounced like "GNU Guitar". English was not the author's native
+    language. When he invented the word, it didn't occur for him to think how
+    it should be pronounced.
+</p>
+<p>GNUitar is distributed under GNU GPL.</p>
+
+<h1><a name=earlier>Earlier works</a></h1>
+<p>
+This program was inspired by two earlier works:<ul>
+<li>Ele 0.1 by Morris Slutsky<br>
+<a href=http://www-personal.umich.edu/~mslutsky/elepage/index.html target=top>
+    http://www-personal.umich.edu/~mslutsky/elepage/index.html</a></li>
+<li>Guitar FX Processor by Marin Vlah<br>
+<a href=http://fly.srk.fer.hr/~mvlah/fx_processor.html target=top>http://fly.srk.fer.hr/~mvlah/fx_processor.html</a></li>
+</ul>
+
+<h1><a name=download>Download</a></h1>
+
+<a href=http://www.gnuitar.com/downloads.php target=top>http://www.gnuitar.com/downloads.php</a><br>
+<a href=http://freshmeat.net/projects/gnuitar target=top>http://freshmeat.net/projects/gnuitar</a><br>
+<a href=http://sourceforge.net/projects/gnuitar target=top>http://sourceforge.net/projects/gnuitar</a>
+
+<h1><a name=requirements>Requirements</a></h1>
+
+<p>To run the software:</p>
+<ul>
+<li>GTK+ versions 1.2.6 or better, or GTK+ 2.6 or better</li>
+<li>GLIB 1.2 or better</li>
+<li>POSIX threads on UNIX</li>
+<li>full-duplex sound card</li>
+</ul>
+</p>
+<p>To compile the software:</p>
+<ul>
+<li>Unix: GCC on Unixish systems</li>
+<li>Windows: MinGW and MSYS, or Microsoft Visual C++ 6.0 or 7.0</li>
+<li>Both: fftw3 for some FFT algorithms (optional)</li>
+<li>Windows: DirectX SDK (or get a copy of dsound.h from WINE)</li>
+<li>Unix: sndfile for wav output on Unixish systems<li>
+<li>Unix: jack, libasound</li>
+</ul>
+
+<p>At the moment, GNUitar contains autotools, Visual Studio and CMake build system
+   files. Using CMake is the recommended way to build GNUitar, but autotools should
+   work on Linux at least.</p>
+
+<h1><a name=performance>Performance</a></h1>
+
+<p>GNUitar should run on even low-end hardware. It has been reported to work
+on even a Pentium II / 300 MHz computer. However, some of the effects
+demand more CPU power, and probably at least 1 GHz machine is required for
+running complicated effect setups.
+</p>
+<p>
+At the moment GNUitar is not capable of utilising dual-core systems for effect processing.
+This is because the effect pipeline runs on one thread and the data must pass quickly
+from one effect to next. Utilising dual-core would require independent parts of pipeline
+that could be run in parallel, but on GNUitar all effects are daisy-chained. That being
+said, the dual-core will still be used to run the GUI thread, and a version of JACK
+exists that attempts to use multiple cores to run the independent parts of audio chain
+simultaneously.
+</p>
+
+<p>GNUitar places itself on elevated priority for the time-critical audio thread.
+When running the program, make sure you close all unnecessary applications,
+to free more resources. You would do well to avoid anything that can cause disk
+activity or unpredictable bursts of CPU usage.</p>
+
+<p>
+<strong style="color:red">Warning:</strong> System hang-ups may happen if the effect
+chain ends up consuming all CPU <strong>making the computer unusable</strong>.
+Therefore you should take care to save all important data in other applications before
+testing the limits of GNUitar.
+</p>
+
+<h2><a name=perf_unix>Performance on UNIX</a></h2>
+
+<p>GNUitar executable file should be setuid root to process sound using
+real-time priority class; otherwise you'll hear glitches and delays while 
+switching between windows. The program drops privileges after setting realtime
+class, before analysing any user input. We belive it is secure.
+Latencies of between 4-8 ms are readily obtained on even modest hardware.
+</p>
+<h3>Audio driver setup guide</h3>
+<p>
+    Plug something into your line input jack: guitar, portable CD player,
+    whatever.  If you have "Analog Mix" control, you can test sound input
+    without running GNUitar.  Temporarily maximise the "Analog Mix" control and
+    twiddle with capture controls until you start to hear something. After
+    this, mute every unnecessary capture control. You should end up with the minimum
+    set of mixers necessary to get the input into the soundcard's output.
+    When done, turn "Analog Mix" control down. No sound must be produced if
+    GNUitar is not running.
+</p>
+<p>
+    Typical setup that works is: Line input is maximised, Analog Mix is minimised,
+    Analog Mix Capture is maximised. <strong color="red:">Important:</strong>
+    ensure that the "What You Hear" control, often called PCM capture on ALSA, is muted.
+    If this control is maximised, gnuitar will constantly reprocess its own output.
+</p>
+<p>
+    Be sure to turn your volume low before starting GNUitar for the first time.
+    Your speakers and your ears will thank you. Observe the input volume and master
+    volume VU meters. You should be reading some value above -96 on them, and the
+    bars should wiggle a bit, as indication that some signal is coming in.
+    The scale is logarithmic, so even the slightest noise can be seen.
+</p>
+<p>
+    On the other
+    hand, if the bars are at -96 and there is a large button on left that says "ERROR",
+    the sound driver could not be initialised and the debug window on bottom should be
+    examined for clues about the setup failure. Try different drivers, for instance
+    JACK or ALSA from the sampling parameters dialog in Options menu. Press the "ERROR"
+    button to try setting audio up again. If it works now, the button changes to Stop
+    and remains pressed down.
+</p>
+<p>
+    To set up appropriate volume on capture and playback, you should choose the Line In
+    or Analog Mix Capture control value in such a way that the maximum sound is
+    is not hitting above the -3 dB value on either control. After -3 dB, the sound will
+    almost certainly begin to distort. This can be heard as a harsh "edge" appearing
+    on sound. This distortion contains <strong>significant</strong> amount of energy
+    in treble range and may <strong>easily destroy your speakers</strong>, so please be
+    cautious! If you want distorted sounds, try using the tube-amp and overdrive effects.
+</p>
+<p>
+    The volume sliders to right of VUs are digital volume controls, and do not
+    change mixer settings. Using these to correct for the problem may be
+    appropriate for output after effect processing has occured, but is rarely good
+    idea for input because of the implied loss in dynamic range. When picking a
+    chord normally, the input VU should indicate volume somewhere between
+    -10 and -20 dB.
+</p>
+
+<h3>JACK setup tips</h3>
+
+<p>JACK parameters are defined in a file called .jackdrc on home directory.
+    When GNUitar starts, it tries to contact a JACK server or opens up its own if
+    none exist, and these parameters are used.  This line works quite well on Ubuntu
+    Dapper/Edgy:
+</p>
+<pre>/usr/bin/jackstart -R -dalsa -dhw:0 -r48000 -p256 -n2 -i2 -o2 -zs</pre>
+<p>
+    It specifies realtime (elevated priority) operation, alsa driver using alsa
+    hardware hw:0, 48000 Hz sampling frequency, 256-frame buffer size (quite large,
+    also 128 would work well), 2 periods, 2 input channels, 2 output channels
+    and shaped dither mode.
+</p>
+<p>
+    48000 Hz sampling frequency is recommended if Creative soundcards are used,
+    because they only work correctly on this sampling frequency (at least on Linux).
+    In fact, Creative soundcards have long been an enemy of hi-fi audio
+    reproduction. It doesn't matter whether Creative's design is to blame or whether
+    it is due to bugs on Linux driver: the end result is same. Regardless, M-Audio
+    soundcards should be an excellent alternative for Linux at the moment (2006).
+</p>
+<p>
+    Audio dithering may be waste for sampled audio which is usually noisy to begin with,
+    but shaped dithering offers some dynamic range extension between 0-12 kHz with the
+    cost of added noise between 12 and 24 kHz. The dithering algorithm used by JACK
+    is fast enough, so I recommend using it. The audio is dithered with all other
+    drivers by GNUitar, but with JACK it is assumed that JACK is setup to do its own
+    dithering.
+</p>
+<p>
+    For MIDI, some kind of JACK connection utility is necessary for making the
+    connection from your MIDI device of choice to GNUitar's midi port. If you do not have
+    hardware MIDI devices that you wish to use with gnuitar, you of course do not
+    need to do this. I use qjackctl for JACK configuration and connection management.
+</p>
+
+<h2><a name=perf_windows>Performance on Windows</a></h2>
+
+<p>Windows have complex problems with latency when processing audio in real time,
+mostly because of its non-uniform drivers architecture. 
+GNUitar latency on Windows is much higher than on Linux. The real latency
+depends mostly on the sound card's driver.
+</p>
+
+<p>GNUitar for Windows has two playback methods:</p>
+<ul>
+<li>Playback via MMSystem</li>
+<li>Playback via DirectSound</li>
+</ul>
+<p>The first method uses the standard MME API (functions waveOut*()).
+The second method requires DirectX to be installed and uses DirectSound
+for playback. The method can be switched from the sampling parameters dialog,
+by checking/unchecking the "Playback via DirectSound" checkbox.
+</p>
+<p>DirectSound playback shows the best results that are almost close to
+Linux performance. The MME playback exists for compatibility purposes,
+and for another reason. If a driver is not optimized for DirectSound,
+Windows will automatically emulate DirectSound output using the MME devices.
+If a WDM driver is used (see below), DirectSound support is not implemented
+by the driver developer but by the operating system. MME playback support exists
+specially for this case, when the output via DirectSound is emulated by OS.
+</p>
+<h3>Windows Sound Drivers Overview</h3>
+<p>There are few kinds of sound drivers for Windows: old VXD (Win95/98),
+NT4-kernel style, and modern WDM drivers that were introduced in Windows 98/SE.
+AFAIK WDM drivers provide much lower latency. Therefore, avoid VXD drivers; 
+use modern WDM drivers instead, if possible.
+</p>
+<p>The difference in latency between two kinds of drivers is really noticeable:
+I had 100ms up to ~400ms on Pentium III/850/ISA AWE64/VXD/MME playback,
+and ~60ms on Pentium MMX/166/Yamaha OPL3/WDM/MME playback laptop.
+Try to start/stop sound few times, if the initial latency is bad.
+</p>
+<p>The kind of bus (PCI Express/PCI/ISA) of the sound card does not affect
+the latency that much, it's most often a software issue. Old sound cards that
+are unusable in Windows are likely to work just fine in Linux.
+</p>
+
+<h1><a name=latency_control>How To Control Latency</h1>
+<p>The latency can be controlled in the Options dialog.
+It can be invoked from the
+<i>Options->Sampling Parameters</i> menu (or by <i>Ctrl-P</i>). You will
+need to stop playback before this dialog is available. (Will be fixed in
+a future release.) There is an option called "Fragment Size". The lower the
+fragment size is, the better is the latency, but this is not a free lunch.
+If the latency is too low, the CPU must be constantly working with the audio
+driver, and any pause in audio processing will cause an overrun.
+You may need to increase the fragment size on low-end computers. Try increasing
+this value if you hear repeated scratching or popping from the speakers.
+</p>
+<p>General notes on how to achieve the best performance:
+</p>
+<ul>
+<li>The lower the sampling rate, the less there is CPU load. Drawback is
+the lower sound quality.</li>
+<li>The lower the fragment size, the better is the latency. Drawback is the
+higher system load.</li>
+<li>The audible periodic scratches (DirectX output) can be fixed
+by decreasing the overrun threshold (sampling parameters dialog).</li>
+<li>Increase the fragment size and decrease the sampling rate on
+low-end CPU, to gain the best latency/overruns/load ratio.</li>
+<li>On Windows, prefer WDM drivers, if possible. Try both MMSystem and
+DirectX playback; choose which is the best.</li>
+<li>Prefer Linux over Windows. Properly tuned Linux kernel has 10-100 times 
+better latency on the same hardware.</li>
+<li>Make GNUitar executable setuid root on UNIX, to allow it run with
+increased priority. (See discussion about security on Performance section above.)</li>
+</ul>
+
+<h1><a name=install>Installation</a></h1>
+
+<p>
+See <a href=install.html>INSTALL</a> file for common installation notes.
+</p>
+
+<h1><a name=gui>Interface and Controls</a></h1>
+
+<p>There are 3 areas in the main window. The right area is a list of all
+available effects. The central area contains effects that are currently used.
+There are few buttons right to it should be used to add/remove effects 
+and change its order. Each effect has separate top-level control window with 
+appropriate sliders.  Each effect-control box is shown in the window manager
+task bar.
+</p>
+
+<p>The left area contains available effect layouts, or presets, and button
+to add the one. Layout is a "snapshot" of your effects and its' 
+settings, you can load/save using "File" menu.
+</p>
+
+<p>Big "Cycle button" button is used to cycle between layouts. In this manner,
+you can change current sound by one mouse/keyboard click.
+</p>
+
+<p>Big "START/STOP" button is used to start/stop playback.
+You may want to try pressing it a few times if you experience buffer overruns
+or broken sound output. Sometimes it helps.
+</p>
+
+<p>You can write track of what you play to a file. Just click
+check-box "Write track" at the bottom of program window, enter 
+file name and play. Don't forget that continuous track write 
+can fill out your hard drive.
+The track file format is WAV data on Windows and Linux.
+</p>
+<p>Linux WAV writing depends on libsndfile. However, if you do not have sndfile,
+then the data is raw 16-bit signed data on host system endianness, with the sampling rate
+and channels as defined in the sampling parameters dialog. You can convert it with
+<a href="http://sox.sourceforge.net/">sox</a> like this:
+</p>
+<pre>sox -w -s -c 1 -r 44100 track.raw track.wav,</pre>
+<p>
+and then to <a href="http://www.vorbis.com/">ogg vorbis</a>:
+</p>
+<pre>oggenc track.wav</pre>
+
+<h1><a name=effects>Effects</a></h1>
+<p>
+The controls and description of the effects follow below.
+</p>
+<h2><a name=autowah>Autowah</a></h2>
+<p>
+    Wah sound is typically implemented by a resonant filter. GNUitar provides three
+    resonant filters to play with: low-pass filter, 2x rc bandpass filter and a
+    digital model of the moog ladder filter (in-between low-pass and bandpass resonant
+    filters but also nonlinear, causing sound "warming" or "dirtying").
+</p>
+<p>
+    The moog filter model was designed by Antti Huovilainen, and it was published at
+    DAFx'04. On low resonance values it acts a lot like a 2nd order bandpass filter with
+    some saturation colouring the sound into a warmer, bloomy sound. On resonance values
+    exceeding 100%, the wah would actually produce self-supporting oscillations, turning
+    into a synthesizer itself.
+</p>
+<dl>
+<dt>period</dt>
+<dd>length of one cycle of effect</dd>
+<dt>low freq</dt>
+<dd>lowest frequency (the cycle ends at this freq.)</dd>
+<dt>high freq</dt>
+<dd>high frequency (the cycle starts at this freq.)</dd>
+<dt>dry/wet</dt>
+<dd>mix clean sound with processed sound</dd>
+<dt>resonance</dt>
+<dd>choose resonance of the lowpass filter and the moog ladder filter.
+    Values close and exceeding 100% are slightly dangerous and may clip. Adjust volume
+    down if extreme resonances are desired.</dd>
+<dt>sweep mode</dt>
+<dd>The Wah can be run in three modes. The continuous mode simply sweeps between the
+    low and high frequency range in /\/\/\/ type manner, the envelope mode attempts to
+    "listens" to input signal and trigger wah sweep from high to low frequency whenever
+    guitar is being picked. The third mode uses a MIDI pitch bend control to set the
+    wah frequency.</dd>
+</dl>
+
+<h2><a name=distort>Distortion</a></h2>
+<dl>
+<dt>distort</dt><dd>power of effect</dd>
+<dt>level</dt><dd>volume in case you need to mute it quickly</dd>
+<dt>saturation</dt><dd>high-frequency "sand" in the sound</dd>
+<dt>lowpass</dt><dd>lowpass filter that can be used to change the sound feel</dd>
+</dl>
+
+<h2><a name=delay>Delay</a></h2>
+<p>
+A no-frills time-delay effect that can also split original signal in several
+physical output channels if available.
+</p>
+<dl>
+<dt>decay</dt><dd>decay % between subsequent repeats</dd>
+<dt>time</dt><dd>delay time between repeats</dd>
+<dt>repeat</dt><dd>number of repeats</dd>
+<dt>multichannel</dt><dd>(if available) switch effect to circulate delay voices through available channels</dd>
+</dl>
+
+<h2><a name=reverb>Reverberator</a></h2>
+<p>
+Reverberator produces echoed "space" sound. Controls:
+</p>
+<dl>
+<dt>delay</dt><dd>delay before repeating starts</dd>
+<dt>wet</dt><dd>"wet" (processed) sound volume</dd>
+<dt>dry</dt><dd>"dry" (clean) sound volume</dd>
+<dt>regen</dt><dd>decay % between subsequent repeats</dd>
+</dl>
+
+<h2><a name=tremolo>Tremolo</a></h2>
+<p>
+Tremolo is a pitch shifter that does not preserve note relationships (in other words,
+a bit like a genuine tremolo bar). This effect is really a version of Stereo phaser
+with Wet at 100 % and only one channel used for output.
+</p>
+<dl>
+<dt>period</dt><dd>length of one cycle of effect</dd>
+<dt>amplitude</dt><dd>depth of modulation</dd>
+</dl>
+
+<h2><a name=chorus>Chorus / Flanger</a></h2>
+<p>
+This effect mixes a time-delayed versions of input with the original signal
+simulating several players playing the same tune. Variations of this
+concept also produce flanger and vibrato effects.
+</p>
+<p><strong>Chorus</strong>Use several voices and long base delay time.</p>
+<p><strong>Flanger</strong>With just 1 voice and low delay time, the effect becomes a
+flanger. However, by adding more voices and increasing the delay, the sound again
+turns choruslike. If the multichannel mode is available and enabled, the effect
+distributes one voice per output channel.
+</p>
+<p><strong>Vibrato</strong> If dry/wet at 100% (fully wet) and 1 voice, this effect
+becomes a vibrato.
+</p>
+<dl>
+<dt>delay</dt><dd>fixed time delay before mixing</dd>
+<dt>depth</dt><dd>the depth of modulation</dd>
+<dt>period</dt><dd>the length of modulation cycle</dd>
+<dt>voices</dt><dd>number of chorus voices to mix</dd>
+<dt>dry/wet</dt><dd>dry vs. wet mixing ratio</dd>
+<dt>regen</dt><dd>feedbacks some of the output back to input</dd>
+<dt>multichannel</dt><dd>causes the effects to distribute chorus voices around speakers</dd>
+</dl>
+
+<h2><a name=echo>Echo</a></h2>
+
+<p>
+Another reverberation effect, but not like the others.  Echo simulates a
+large hall echo using varying length of delays in all its voices, and produces
+complicated echo pattern that simulates large hall full of hard surfaces of different
+sizes.
+</p>
+
+<dl>
+<dt>decay</dt>
+<dd>decay % between subsequent repeats</dd>
+<dt>voices</dt>
+<dd>number of independent echo voices</dd>
+<dt>delay</dt>
+<dd>sets the length of maximum echo delay</dd>
+</dl>
+
+<h2><a name=phaser>Phaser</a></h2>
+
+<p>
+Phaser operates by introducing a variable frequency dependant delay over the audio
+signal. If the dry/wet ratio is at 50 %, the delayed components will produce interference
+with the original signal which produces moving notches across the audio spectrum,
+producing the phaser sound. However, if dry/wet ratio is at 100%, this effect becomes 
+a vibrato.
+</p>
+
+<dl>
+<dt>period</dt>
+<dd>length of the modulation cycle</dd>
+<dt>depth</dt>
+<dd>an unitless measure of the maximum delay imposed by the effect on the audio</dd>
+<dt>dry/wet</dt>
+<dd>the dry vs. wet mixing ratio</dd>
+<dt>stereo</dt>
+<dd>Stereo switch changes the algorithm to one based on hilbert transform, which
+    naturally produces signals with time-varying phase shift.</dd>
+</dl>
+
+<h2><a name=rotary>Rotary speaker</a></h2>
+
+<p>
+Rotary speaker is an implementation of the combined horn and bass speaker mounted on
+opposite sides of a rotating cabinet. As the cabinet turns, the doppler effect shifts
+the audio spectrum up and down, depending on whether the speaker is receding or
+approaching.
+</p>
+
+<dl>
+<dt>period</dt>
+<dd>Time for one complete rotation of the cabinet.</dd>
+</dl>
+
+<h2><a name=tremolobar>Tremolo bar</a></h2>
+<p>
+Does a pitch shift using single sideband modulation that does not preserve
+harmonious relationships, causing the guitar to appear out of tune at first.
+Larger displacement of tone produce metal bell -type sounds as the harmonic
+components shift into relationships that are not possible for a guitar to make.
+</p>
+<dl>
+<dt>period</dt>
+<dd>length of one cycle of effect</dd>
+<dt>depth</dt>
+<dd>dynamic pitch shift depth</dd>
+<dt>base</dt>
+<dd>fixed amount of pitch shift. If this value is 0 or less, the sideband modulation
+occurs downwards. If the value is greater than 0, the switch occurs upwards</dd>
+</dl>
+
+<h2><a name=distort2>Overdrive</a></h2>
+
+<p>Another cool distortion. Emulates the distortion circuits in many popular
+overdrive pedals such as Ibanez TS9.
+</p>
+
+<dl>
+<dt>drive</dt><dd>how much amplification</dd>
+<dt>clip</dt><dd>changes tone from TS9-type fuzz to less powerful distortion</dd>
+<dt>treble</dt><dd>tone control</dd>
+</dl>
+
+<h2><a name=tubeamp>Tube amplifier</a></h2>
+
+<p>
+Because Overdrive is limited to simulating the Ibanez TS9, another effect is required
+for more powerful distortion sounds.
+The effect loosely models a tube amplifier with a variable number of output stages,
+each which add slightly different kind of clipping to the sound.
+</p>
+
+<dl>
+<dt>stages</dt>
+<dd>Number of stages. All can be used to produce distortion, 3-4 stages being very close
+to overkill.</dd>
+<dt>gain</dt>
+<dd>Gain per stage. Higher gains drive the later stages into more clipping.
+    Please use the master volume control for now to set output volume, if less extreme
+    distortions are desired.</dd>
+<dt>absolute bias</dt>
+<dd>A parameter to the ad-hoc tube model.</dd>
+<dt>dynamic bias</dt>
+<dd>Input-dependant parameter to the ad-hoc tube model.</dd>
+</dl>
+
+<h2><a name=noise>Noise gate</a></h2>
+
+<p>Simple noise reduction effect.</p>
+
+<h3>IMPORTANT NOTES</h3>
+
+<ul>
+<li>Should be used <b>BEFORE</b> the distortion.</li>
+<li>If you want to achieve a note slight attack (fade in),
+    you must increase the Hold time as much as possible.
+    Otherwise with the low Attack time and low signal you
+    the effect will be constantly false triggered, therefore
+    breaking the fade-in effect</li>
+</ul>
+
+<p>Controls are:</p>
+<ul>
+<li>threshold    - minimal volume of the sound required to pass signal
+                   to the output.</li>
+<li>hold         - if the signal is below threshold during this time,
+                   it will be muted. Should be as low as possible.
+		   Simply - it is an effect triggering time.</li>
+<li>release time - if the signal is below threshold, the playback
+                   is not muted immediately but fades out this time instead</li>
+<li>attack       - if the signal is above the threshold, it will fade in
+                   this time. Usually should be 0, but having it
+		   non-zero will produce interesting effect just like the
+		   violin sound.</li>
+<li>hysteresis   - the threshold required to turn off the playback when
+                   it is already on (the regular threshold affects
+		   only the growing signal, while hysteresis
+		   affects fading signal). Should not be made larger than
+		   the threshold value.</li>
+</ul>
+
+<h2><a name="eqbank">Equalizer bank</a></h2>
+
+<p>
+A no-frills equalizer effect with plenty of sliders for fine grained
+control of the frequency response. Equalizers are rumoured to be especially
+useful before and after distortion effects.
+</p>
+
+<h2><a name=pitch>Pitch shifter</a></h2>
+
+<p>Pitch shifter is a stock WSOLA (Waveform Similarity Overlap-Add) algorithm.
+Waveform similarity looks at repeating waveform shapes and then does some
+"cut and paste" to build lengthened or shortened version of the original waveform
+without affecting the sound pitch.  The effect first lengthens or shortens the
+play length of the sound without, then resamples the audio to the desired playback
+rate, causing the actual pitch shift effect.
+
+<p>This pitch shifter is not suitable for general music rekeying, but should be
+suitable for simple instruments such as human voice or guitar. Complex
+polyharmonic sounds combine to a complicated waveform, making it difficult to
+find an appropriate "copy" of the input signal for duplication. This condition
+shows as frequency wavering effects and pre-echo type of artifacts. Secondly, the
+effect processes all inputs channels independently, leading to phase errors in
+stereo music.</p>
+
+<dl>
+<dt>halfnote</dt><dd>how many half-notes to adjust upwards or downwards</dd>
+<dt>finetune</dt><dd>adjust for in-between tones for half-notes</dd>
+<dt>wet/dry</dt><dd>select mix % between unprocessed and processed signal for chorus-like effect</dd>
+</dl>
+<h2><a name=tuner>Tuner</a></h2>
+
+<p>
+This is a simple general-purpose instrument tuner. The display contains:
+</p>
+
+<ul>
+<li>the current detected frequency of the sound</li>
+<li>the ideal frequency of the sound</li>
+<li>the note closest to the measured frequency</li>
+<li>an indicator that shows how the two frequencies are matched</li>
+<li>list of typical guitar tunings, and indicators that light up when
+    frequency matches their pretabulated frequencies.</li>
+</ul>
+
+<b>How to tune</b>
+
+<p>In nutshell: if the indicator veers to left, tune up; if it veers to right, tune down.</p>
+
+<p>
+Tuner is generally agnostic to the desired tuning. Some indicators are provided
+that match some of the most typical guitar tunings, but whether you use them
+or not is up to you.
+</p>
+
+<b>Tricks and tips</b>
+
+<p> Tuner is very sensitive to noise (unfortunately), so a good, clean signal
+is the most important thing.  If tuner doesn't quite seem to work for you out
+of the box, try the following tricks: </p>
+
+<ul>
+<li>
+    Mute all other strings <em>lightly</em> with your fingers. Don't press
+    or bend the strings, if you have a floating bridge&mdash;this will
+    have similar effect as pressing tremolo bar down.
+</li>
+<li>
+    Pick the string normally above the pickups. The tuner tends to find the
+    frequency component with the most amplitude. If you pick the strings in an unusual
+    way, it may find some high-order harmonics instead (or even worse,
+    oscillate between some upper harmonic and the base frequency).
+</li>
+<li>
+    Try different pickups if tuner has difficulties with particular pickups.
+</li>
+</ul>
+
+<p>You can also use the tuner to fix your guitar's intonation (the length of
+the string). You may need to check intonation whenever you change your string
+make or gauge. First, tune your guitar as perfectly as possible, then pick all
+the strings at the 12th fret.  You should see the tuner report double the
+frequency but the accuracy indicator should stay centered. Compare this
+frequency with the harmonic 12th frequency -- they should be the same.
+However, if the indicator of fretted 12th is right to the harmonic, you need to
+make the string longer. If it is to left, you need to make the string shorter.
+As a general guideline, the thinnest strings are the shortest, and the thickest
+strings the longest.</p>
+
+<h1><a name=bugs>Bugs</a></h1>
+
+<ul>
+<li>Windows version is not very stable yet. There could be problems
+with memory leaks and with sound initialisation/closing.</li>
+</ul>
+<p>Send bug reports to 
+<a href=mailto:fonin at gnuitar dot com>fonin at gnuitar dot com</a>.</p>
+
+<h1><a name=freesoft>About Free Software Development</a></h1>
+
+<p>You should always keep in mind, that development of free software
+doesn't work in the same way as commercial development. Every
+successful free software project has an active user base behind it. This
+means that your comments, ideas and bug reports are extremely
+important. If something doesn't work, or some feature is missing,
+please mail me about it. Thank you in advance! You can send GNUitar
+related mails to me at <a href=mailto:fonin at gnuitar dot com>fonin at gnuitar dot com</a>.</p>
+
+<h1><a name=legal>Legal Issues</a></h1>
+
+<p>GNUitar is a free software and is distributed under the terms of 
+GNU GPL license. You are free to copy and share the program with other people, 
+you are not limited with the number of computers where you can use it. 
+You can redistribute the program and the works based on it 
+under the terms of GPL license. You have complete sources and detailed compile 
+instructions to build the program yourself, as well as binaries.
+You have full freedom with using and sharing the program,
+according to the GNU software concept.
+</p>
+
+<h1><a name=faq>Frequently Asked Questions</a></h1>
+<p>See <a href=faq.html>this</a> page.</p>
+
+<h1><a name=links>Related Links</a></h1>
+
+<p>
+<a href=http://www.gnuitar.com/downloads.php target=top>http://www.gnuitar.com/downloads.php</a> and <br>
+<a href=http://freshmeat.net/projects/gnuitar target=top>http://freshmeat.net/projects/gnuitar</a> and<br>
+<a href=http://sourceforge.net/projects/gnuitar target=top>http://sourceforge.net/projects/gnuitar</a> 
+- GNUitar project pages<br>
+<a href=http://linux-sound.org target=top>http://www.linux-sound.org</a> -
+    excellent categorized list of Unix sound software<br>
+<a href=http://home.sprynet.com/~cbagwell/sox.html target=top>http://home.sprynet.com/~cbagwell/sox.html</a> - 
+    SoX playback/record/processing software<br>
+<a href="http://bladeenc.mp3.no/" target=top>http://bladeenc.mp3.no/</a> - 
+    BladeEnc, free MP3 encoder
+</p>
+
+<h1><a name=author>Authors</a></h1>
+
+<table cellspacing="0" cellpadding="0">
+<tr>
+    <td valign="top"><a href="http://www.omnistaronline.com/~fonin/>http://www.omnistaronline.com/~fonin/">Max Rudensky</a></td>
+    <td valign="top">&lt;fonin at gnuitar dot com&gt;<br>
+                     &lt;fonin at yahoo dot com&gt;</td></tr>
+<tr>
+    <td valign="top"><a href="http://bel.fi/~alankila/blog/">Antti S. Lankila</a></td>
+    <td valign="top">&lt;alankila at bel dot fi&gt;</td></tr>
+<tr>
+    <td valign="top">Eugen Bogdan (/Dexterus)&nbsp;</td>
+    <td valign="top">&lt;dexterus at hackernetwork dot com&gt;</td></tr>
+<tr>
+    <td valign="top">Vasily Khoruzhick</td>
+    <td valign="top">&lt;anarsoul at gmail dot com&gt;</td></tr>
+</table>
+
+</body>
+</html>

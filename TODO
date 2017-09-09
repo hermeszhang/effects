@@ -1,0 +1,194 @@
+TODO:
+0.2.0
++ fix delay and set rt priority to the thread
+  - research latency time on different kinds of drivers and
+    fragment sizes (for low-end computers)
++ в write/load процедурах делать не sizeof(тип), а sizeof(переменная)
++ disclaimer and copyright update in each source
++ GPL notice everywhere
++ icon for the program
++ перед релизом марафет в исходниках - dos2unix, indent и вручную все проверить.
++ win32 - при нажатии на write track, а затем cancel, чекбокс остается
+  нажатым.
+- more docs
+  + HTML docs and a convert script to produce text versions
+    + docs/makefile
+  + launch browser to show documentation from the GNUitar
+    + win32
+    + check for browsers and getenv("BROWSER")
+    + UNIX - искать доку в /usr/share/doc, /usr/local/doc, /usr/local/share,
+      /usr/doc, в текущей дире и на уровень выше
+    + windows - искать доку в текущей и в ..\docs
+  + user documentation with effects description
+  + note on high priority thread and hangups
+  + legal issues
+  - order info
++ meaningful names for effects
+  + measure all in standard SI units (ms, etc.)
+    + reverb
++ problems with banks list - does not support national characters
++ demo version
++ good effects presets
++ fix tracker module (write to .WAV file)
++ problem with tremolo.c - memory bound error
++ lick up the project file
++ graceful app shutdown (function die)
+
+0.2.1
++ meaningful return codes
++ fix - multiply all time controls to the number of channels
+  and adjust time controls according to the sample rate
++ sample rate/fragments/stereo/bits controls on the fly
+  + sampling params dialog
+  + start/stop toggle button
+  + inner implementation: Linux
+    + обрабатывать значение latency
+    + правильно обрабатывать различные форматы данных
+      - 8/16 бит
+      + моно/стерео
+  + inner implementation: Windows
++ meaningful names for effects
+  + measure all in standard SI units (ms, etc.)
+    and care about array bounds (like in tremolo and vibrato)
+    + vibrato
+    + tremolo
+    + reverb
+    + distortion
+    + chorus
+    + delay
+    + echo
+    + wah
+    + sustain
+    + phasor
++ cleanup effects
+  + delay
+  + echo
+
+0.3.0
++ DirectSound API Win32
+  + fix buffer over/underruns (48000)
+  + fix latency autowah
+  + DirectSound control in sampling params dialog
+  + optimize loops in the audio thread
+
+0.3.1
++ noise gate
++ new overdrive effect
+
+0.3.2
++ GTK2
+  - test on Windows
++ equalizer effect
+  + 5kHz limit problem
++ process all in floats to decrease SNR ? Convert only on input and output ?
+  (as IFDEF)
++ distortion
++ correct build files for MSVC6.0
++ help contents on Windows 2000
++ sigfault on help contents with netscape, linux
+  (looks like it is a netscape own error)
++ review the docs, especially build notes for the console MSVC users
++ check autowah on windows
++ better presets for distort1 and phasor
++ autowah breaks the updated low and high values
+
+0.3.3 bugfix release
+NOTE - this release will not be. All goals are reached; we're working now
+on 0.4.0 or maybe even 0.5.0.
++ The EQ bank remembers the values, but they are most definitely not applied to 
+  the sound. (You can recreate this by having an EQ bank with harsh EQ 
+  settings, saving the layout, quitting/reloading this layout, then you will 
+  hear the the effect is not applied. If the slider parameter is adjusted, then 
+  that particular EQ band then works again.)
++ A simple volume effect would be useful. The 2nd distortion effect is great but 
+  sometimes I find it increases the volume to the point where clipping starts 
+  to occur. When this happens, I currently have to use the volume of an EQ bank 
+  to reduce the volume to get rid of the clipping. A simple volume effect would 
+  work great here.
++ Another feature which might be useful, would be a .gnuitar folder within the 
+  home area?? which remembers the options settings eg latency, and reloads 
+  these settings next time Gnuitar is run.
+  + GTK1.2
++ Debian package
++ Race condition on windows: START/STOP can mess up the audio thread.
+
+0.5.0
+0.6.0
+Autowah:
+- I more liked the initial version of the effect. I miss the old 
+power of the effect, it was more bright; I cannot achieve the 
+same sound with the current version. I'm wondering are there 
+presets which make your algo sound like the older one ?
+
+Tremolo:
+- does not sound like it was before. I do not see the recent 
+changes but I think it was more bright before. Currently it 
+sounds more like vibrato.
+
+Reverb:
+- I more liked the reverb which was in the very first versions of 
+the program. It allowed me to sound like Another Brick in the 
+Wall part 1 -- large number and volume of repeats, currently it 
+is impossible.
+
+Phaser:
+- I hear no effect at all. How it should sound ?
+
+Rotary speaker:
+- no effect. I hear nothing. I know it is stereo, I tried in both 
+mono and stereo input modes.
+
+- ALSA is still broken on my laptop - 2Antti
+- fix version and copyrights in about dialog; maybe create a tabbed window
+  with sections "authors", "license" etc. - 2Vasily
+- problems with mms driver on windows - 2Fonin
+- tubeamp and rotary do not work under win32 (as Vasily reported) - 2Antti
+- mentioned bug with sound skips during the track recording, when 
+  the system does the blocking syscalls - 2everyone who can fix it
++ Separate driver routines for DirectX
+  - fix directsound high latency
+- thoroughly test the program; make sure there are no critical bugs - 2All
+- update docs - 2Fonin
+- create a script to produce README file from .html source (?)
++ JACK-audio-connection support
++ Distortion 2 effect values are reset when a layout is loaded.
++ Fix track filename on windows
++ tuner
+  + draw a nice guitar tab and highlight the string as we match its freq.
+    Currently the tuner scale is a bit ugly.
+  + decrease the accuracy - the leds never light
++ GTK-compat for gkeyfile
++ add a button to remove preset from a list
++ weird values in "bits" dropdown
++ constraints for fragment size for various audio drivers (2^N for OSS etc)
++ remove mix control from autowah, or replace it with dry/wet
++ tooltips to the noise gate window with important notes
++ double click on effect's name put a focus on its window
++ master volume is saved in the preset
+
+0.7.0
+- asio support on Windows
+- get rid of the console window; split an area in the main window for the status
+  messages;
+- Split off DirectX stuff into a separate file - audio-dsound.*
+- load preset files from the command line
+- group effects and give it meaningful names (like overdrive should be together;
+  delay effects should be together; etc)
+- new noise gate effect
+- i18n
+- effects with a sinusoidal phase/amplitude shape (tremolo,chorus)
+  offer other shapes (square, triangular)
+- fix non-ASCII filenames with GTK file dialogs
+?- external pedal and switch
+- play .wav in the background
+
+Ongoing bugs (misc):
+- convert the names of presets to UTF8 strings, before append it
+  to the bank list, as recommended by GTK-Win32 manual.
+- bug with GTK critical error on finish
+
+Misc something:
+- port to wxWidgets ?
+- have a text boxes connected to the sliders, to directly edit the values
+- how to swap a slider controls, to make a bottom be on top and vice versa ?
+  So we move the slider up to increase the value, instead of moving it down...
