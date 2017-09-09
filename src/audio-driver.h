@@ -110,7 +110,7 @@ extern DSP_SAMPLE       procbuf2[MAX_BUFFER_SIZE / sizeof(SAMPLE16)];
 #endif
 
 void guess_audio_driver(void);
-void set_audio_driver_from_str(const char const *str);
+void set_audio_driver_from_str(const char *str);
 void triangular_dither(data_block_t *db, SAMPLE16 *target);
 
 #endif

@@ -111,7 +111,6 @@
  */
 
 #include "echo.h"
-#include "gui.h"
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -124,30 +123,6 @@
 #define ECHO_FIRST_PRIME                    20
 #define ECHO_NEXT_PRIME_DISTANCE_FACTOR	    1.6
 #define ECHO_CROSSMIX_ATTN                  10.0
-
-static void
-update_echo_decay(GtkAdjustment *adj, struct echo_params *params)
-{
-    params->echo_decay = adj->value;
-}
-
-static void
-update_echo_count(GtkAdjustment *adj, struct echo_params *params)
-{
-    params->echoes = adj->value;
-}
-
-static void
-update_echo_size(GtkAdjustment *adj, struct echo_params *params)
-{
-    params->echo_size = adj->value;
-}
-
-static void
-toggle_echo_multichannel(void *bullshit, struct echo_params *params)
-{
-    params->multichannel = !params->multichannel;
-}
 
 static int
 is_prime(int n)
@@ -164,125 +139,7 @@ is_prime(int n)
 static void
 echo_init(struct effect *p)
 {
-    struct echo_params *params;
-
-    GtkWidget      *decay;
-    GtkWidget      *decay_label;
-    GtkObject      *adj_decay;
-
-    GtkWidget      *count;
-    GtkWidget      *count_label;
-    GtkObject      *adj_count;
-
-    GtkWidget      *size;
-    GtkWidget      *size_label;
-    GtkObject      *adj_size;
-
-    GtkWidget      *button, *mcbutton;
-    GtkWidget      *parmTable;
-
-    params = p->params;
-
-    /*
-     * GUI Init
-     */
-    p->control = gtk_window_new(GTK_WINDOW_DIALOG);
-
-    gtk_signal_connect(GTK_OBJECT(p->control), "delete_event",
-		       GTK_SIGNAL_FUNC(delete_event), p);
-
-    parmTable = gtk_table_new(2, 8, FALSE);
-
-    adj_decay = gtk_adjustment_new(params->echo_decay,
-				   1.0, 80.0, 1.0, 10.0, 0.0);
-    decay_label = gtk_label_new("Decay\n%");
-    gtk_table_attach(GTK_TABLE(parmTable), decay_label, 0, 1, 0, 1,
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_decay), "value_changed",
-		       GTK_SIGNAL_FUNC(update_echo_decay), params);
-
-    decay = gtk_vscale_new(GTK_ADJUSTMENT(adj_decay));
-    gtk_widget_set_size_request(GTK_WIDGET(decay),0,100);
-
-    gtk_table_attach(GTK_TABLE(parmTable), decay, 0, 1, 1, 2,
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK), 0, 0);
-
-
-    adj_count = gtk_adjustment_new(params->echoes,
-				   1.0, MAX_ECHO_COUNT, 1.0, 1.0, 0.0);
-    count_label = gtk_label_new("Voices\n#");
-    gtk_table_attach(GTK_TABLE(parmTable), count_label, 1, 2, 0, 1,
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_count), "value_changed",
-		       GTK_SIGNAL_FUNC(update_echo_count), params);
-
-    count = gtk_vscale_new(GTK_ADJUSTMENT(adj_count));
-    gtk_scale_set_digits(GTK_SCALE(count), 0);
-
-    gtk_table_attach(GTK_TABLE(parmTable), count, 1, 2, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-    adj_size = gtk_adjustment_new(params->echo_size, 1.0,
-                                  MAX_ECHO_LENGTH, 1.0, 1.0, 0.0);
-    size_label = gtk_label_new("Delay\nms");
-    gtk_table_attach(GTK_TABLE(parmTable), size_label, 2, 3, 0, 1,
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_size), "value_changed",
-		       GTK_SIGNAL_FUNC(update_echo_size), params);
-
-    size = gtk_vscale_new(GTK_ADJUSTMENT(adj_size));
-
-    gtk_table_attach(GTK_TABLE(parmTable), size, 2, 3, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-    if (n_output_channels > 1 && n_input_channels == 1) {
-        mcbutton = gtk_check_button_new_with_label("Multichannel");
-        if (params->multichannel)
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mcbutton), TRUE);
-        gtk_signal_connect(GTK_OBJECT(mcbutton), "toggled",
-                           GTK_SIGNAL_FUNC(toggle_echo_multichannel), params);
-
-        gtk_table_attach(GTK_TABLE(parmTable), mcbutton, 1, 3, 2, 3,
-                         __GTKATTACHOPTIONS(GTK_SHRINK),
-                         __GTKATTACHOPTIONS(GTK_SHRINK), 0, 0);
-    }
-    
-    button = gtk_check_button_new_with_label("On");
-    if (p->toggle == 1)
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
-    gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		       GTK_SIGNAL_FUNC(toggle_effect), p);
-
-    gtk_table_attach(GTK_TABLE(parmTable), button, 0, 1, 2, 3,
-		     __GTKATTACHOPTIONS(GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_SHRINK), 0, 0);
-
-    gtk_window_set_title(GTK_WINDOW(p->control), (gchar *) ("Echo"));
-    gtk_container_add(GTK_CONTAINER(p->control), parmTable);
-
-    gtk_widget_show_all(p->control);
-
+  (void) p;
 }
     
 static void
@@ -414,7 +271,6 @@ echo_done(struct effect *p)
         }
     }
 
-    gtk_widget_destroy(p->control);
     free(p);
 }
 

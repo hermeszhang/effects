@@ -34,10 +34,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <gtk/gtk.h>
-#include "glib12-compat.h"
-
 #include "audio-driver.h"
+#include "printf.h"
 #include "utils.h"
 
 struct effect {
@@ -48,7 +46,6 @@ struct effect {
     void            (*proc_save) (struct effect *, GKeyFile *, gchar *);
     void            (*proc_load) (struct effect *, GKeyFile *, gchar *, GError **error);
     short           toggle;
-    GtkWidget      *control;
 };
 typedef struct effect effect_t;
 
@@ -159,7 +156,6 @@ void effect_stop(void);
 
 // effect list operations
 void effect_list_print_all(void);
-void effect_list_add_to_clist(GtkWidget *w);
 int effect_list_find_by_name(const char *name);
 
 // effect operations

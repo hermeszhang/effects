@@ -19,12 +19,14 @@
 
 #include "effect.h"
 
+#include "echo.h"
+
+#if 0
 #include "amp.h"
 #include "autowah.h"
 #include "phasor.h"
 #include "chorus.h"
 #include "delay.h"
-#include "echo.h"
 #include "tremolo.h"
 #include "vibrato.h"
 #include "distort.h"
@@ -37,6 +39,7 @@
 #include "eqbank.h"
 #include "pitch.h"
 #include "tuner.h"
+#endif
 
 #include "utils.h"
 
@@ -50,6 +53,8 @@ struct effect_creator {
 };
 
 static const struct effect_creator effect_list[] = {
+    {"Echo", echo_create},
+#if 0
     {"Digital amp", amp_create},
     {"Autowah", autowah_create},
     {"Distort", distort_create},
@@ -57,7 +62,6 @@ static const struct effect_creator effect_list[] = {
     {"Reverb", reverb_create},
     {"Tremolo bar", vibrato_create},
     {"Chorus / Flanger", chorus_create},
-    {"Echo", echo_create},
     {"Phaser", phasor_create},
     {"Tremolo", tremolo_create},
     {"Sustain", sustain_create},
@@ -68,6 +72,7 @@ static const struct effect_creator effect_list[] = {
     {"Eq bank", eqbank_create},
     {"Pitch shift", pitch_create},
     {"Tuner", tuner_create},
+#endif
     {NULL, NULL}
 };
 
@@ -78,15 +83,6 @@ effect_list_print_all(void)
     int i = 0;
     for (i = 0; effect_list[i].str != NULL; i += 1) {
         printf("\t%s\n", effect_list[i].str);
-    }
-}
-
-void
-effect_list_add_to_clist(GtkWidget *w)
-{
-    int i = 0;
-    for (i = 0; effect_list[i].str != NULL; i += 1) {
-        gtk_clist_append(GTK_CLIST(w), (char **) &effect_list[i].str);
     }
 }
 
