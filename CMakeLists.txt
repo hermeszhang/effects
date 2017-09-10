@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+project("gnu-guitar-effects")
+
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
   set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -fPIC -Wl,-z,defs")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
@@ -17,4 +19,14 @@ add_subdirectory("src")
 add_subdirectory("src/ladspa")
 
 enable_testing()
+
+set (CPACK_PACKAGE_NAME "GNU Guitar Effects")
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A collection of audio effects for the GNU Guitar project.")
+set (CPACK_PACKAGE_VENDOR "Taylor Holberton")
+set (CPACK_PACKAGE_VERSION_MAJOR ${GNU_GUITAR_EFFECTS_VERSION_MAJOR})
+set (CPACK_PACKAGE_VERSION_MINOR ${GNU_GUITAR_EFFECTS_VERSION_MINOR})
+set (CPACK_PACKAGE_VERSION_PATCH ${GNU_GUITAR_EFFECTS_VERSION_PATCH})
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+set (CPACK_PACKAGE_CONTACT "taylorcholberton@gmail.com")
+include(CPack)
 
