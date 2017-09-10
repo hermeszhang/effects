@@ -1,4 +1,8 @@
 language: c
+addons:
+  apt:
+    packages:
+      - libglib2.0-dev
 compiler:
 - clang
 - gcc
