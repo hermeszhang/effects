@@ -1,0 +1,22 @@
+platform:
+  - x86
+  - x64
+
+configuration:
+  - Debug
+  - Release
+
+before_build:
+  - cmd: mkdir build\%platform%
+  - cmd: cd build\%platform%
+  - cmd: if %platform%=="x86" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017
+  - cmd: if %platform%=="x64" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017 Win64
+  - cmd: cmake ..\.. -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration%
+
+build:
+  project: build\%platform%\ALL_BUILD.vcxproj
+  parallel: true
+  verbosity: quiet
+
+test_script:
+  - cmd: ctest -C %configuration% --verbose --output-on-failure
