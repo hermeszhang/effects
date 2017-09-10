@@ -2,7 +2,6 @@ GNU Guitar Effects
 ==================
 
 [![Build Status](https://travis-ci.org/gnu-guitar/effects.svg?branch=master)](https://travis-ci.org/gnu-guitar/effects)
-
 [![Build status](https://ci.appveyor.com/api/projects/status/8ot45taqnahkmklv?svg=true)](https://ci.appveyor.com/project/gnu-guitar/effects)
 
 The GNU Guitar Effects project contains all the audio effects that come packaged
