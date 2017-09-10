@@ -145,10 +145,12 @@
  *
  */
 
-#include "biquad.h"
+#include <gnu-guitar/effects/biquad.h>
+
 #include <math.h>
+
 #ifdef _WIN32
-#   include "utils.h"
+#include "utils.h"
 #endif
 
 /* peaking band equalizer */
@@ -348,7 +350,6 @@ set_hsh_biquad(const double Fs, const double Fc, const double G, Biquad_t *f)
     f->b[3] = -a2 / a0;
 }
 
-/* input is input, output is x0 and x1 with 90° phase separation between them */
 void
 hilbert_transform(const DSP_SAMPLE input, DSP_SAMPLE *x0, DSP_SAMPLE *x1, Hilbert_t *h, const int curr_channel)
 {

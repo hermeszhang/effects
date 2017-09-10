@@ -192,8 +192,8 @@
 #ifndef _BIQUAD_H_
 #define _BIQUAD_H_ 1
 
-#include "audio-driver.h"
-#include "utils.h"
+#include <gnu-guitar/effects/data-block.h>
+#include <gnu-guitar/effects/utils.h>
 
 /* SSE is used to compute convolutions and the biquad summation. */
 #ifdef __SSE__

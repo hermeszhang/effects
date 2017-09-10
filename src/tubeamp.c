@@ -192,13 +192,23 @@
  *
  */
 
+#include <gnu-guitar/effects/tubeamp.h>
+
+#include <gnu-guitar/effects/biquad.h>
+
 #include <math.h>
-#include "gui.h"
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "biquad.h"
-#include "tubeamp.h"
+extern unsigned int sample_rate;
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 #define UPSAMPLE_RATIO 6
 #define IMPULSE_SIZE   512
@@ -334,6 +344,8 @@ static const ampqualities_t ampqualities[] = {
 
 #define NONLINEARITY_SCALE 1024     /* this variable works like gain */
 static float nonlinearity[NONLINEARITY_SIZE];
+
+#ifdef HAVE_GTK
 
 static void
 update_quality(GtkWidget *w, struct tubeamp_params *params)
@@ -519,6 +531,14 @@ tubeamp_init(struct effect *p)
     gtk_widget_show_all(p->control);
 }
 
+#else /* HAVE_GTK */
+
+static void tubeamp_init(struct effect *p) {
+  (void) p;
+}
+
+#endif /* HAVE_GTK */
+
 /* waveshaper based on generic lookup table */
 static float
 F_tube(float in, float r_i)
@@ -548,7 +568,7 @@ F_tube(float in, float r_i)
 static void
 tubeamp_filter(struct effect *p, data_block_t *db)
 {
-    int_fast16_t i, j, k, curr_channel = 0;
+    unsigned int i, j, k, curr_channel = 0;
     DSP_SAMPLE *ptr1;
     struct tubeamp_params *params = p->params;
     float gain;
@@ -611,9 +631,10 @@ tubeamp_done(struct effect *p)
     for (i = 0; i < MAX_CHANNELS; i += 1)
         gnuitar_free(params->buf[i]);
     gnuitar_free(p->params);
-    gtk_widget_destroy(p->control);
     free(p);
 }
+
+#ifdef HAVE_GLIB2
 
 static void
 tubeamp_save(struct effect *p, SAVE_ARGS)
@@ -650,6 +671,8 @@ tubeamp_load(struct effect *p, LOAD_ARGS)
         params->impulse_quality = 1;
 }
 
+#endif
+
 effect_t *
 tubeamp_create()
 {
@@ -662,8 +685,6 @@ tubeamp_create()
     params = p->params = gnuitar_memalign(1, sizeof(struct tubeamp_params));
     p->proc_init = tubeamp_init;
     p->proc_filter = tubeamp_filter;
-    p->proc_save = tubeamp_save;
-    p->proc_load = tubeamp_load;
     p->toggle = 0;
     p->proc_done = tubeamp_done;
 

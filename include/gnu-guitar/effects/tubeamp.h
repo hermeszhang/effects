@@ -23,9 +23,10 @@
 #ifndef _TUBEAMP_H_
 #define _TUBEAMP_H_ 1
 
+#include <gnu-guitar/effects/effect.h>
+#include <gnu-guitar/effects/biquad.h>
+
 #include <stdint.h>
-#include "effect.h"
-#include "biquad.h"
 
 effect_t *tubeamp_create(void);
 
@@ -40,7 +41,7 @@ struct tubeamp_params {
     Biquad_t    decimation_filter;
 
     /* user parameters */
-    int         stages, impulse_model, impulse_quality;
+    unsigned int stages, impulse_model, impulse_quality;
     float       gain, asymmetry, biasfactor;
     float       tone_bass, tone_middle, tone_treble;
     

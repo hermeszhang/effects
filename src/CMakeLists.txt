@@ -7,6 +7,8 @@ add_library("gnu-guitar-effects" OBJECT
   "${INCDIR}/data-block.h"
   "${INCDIR}/backbuf.h"
   "${SRCDIR}/backbuf.c"
+  "${INCDIR}/biquad.h"
+  "${SRCDIR}/biquad.c"
   "${INCDIR}/echo.h"
   "${SRCDIR}/echo.c"
   "${INCDIR}/effect.h"
@@ -14,7 +16,9 @@ add_library("gnu-guitar-effects" OBJECT
   "${INCDIR}/printf.h"
   "${SRCDIR}/printf.c"
   "${INCDIR}/reverb.h"
-  "${SRCDIR}/reverb.c")
+  "${SRCDIR}/reverb.c"
+  "${INCDIR}/tubeamp.h"
+  "${SRCDIR}/tubeamp.c")
 
 add_library("gnu-guitar-effects-test"
   "test.h"
@@ -28,6 +32,7 @@ endfunction (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
 
 add_gnu_guitar_effects_test("echo-test" "echo-test.c")
 add_gnu_guitar_effects_test("reverb-test" "reverb-test.c")
+add_gnu_guitar_effects_test("tubeamp-test" "tubeamp-test.c")
 
 enable_testing()
 
