@@ -140,7 +140,7 @@ static void reverb_done(struct effect *p) {
     dr = (struct reverb_params *) p->params;
 
     for (i = 0; i < MAX_CHANNELS; i += 1) {
-        free(dr->history[i]);
+        del_Backbuf(dr->history[i]);
         del_Backbuf(dr->ap[i][0]);
         del_Backbuf(dr->ap[i][1]);
         del_Backbuf(dr->ap[i][2]);
