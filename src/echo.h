@@ -38,7 +38,7 @@ struct echo_params {
     double          decay_factor[MAX_ECHO_COUNT];
     double          echo_size,
                     echo_decay;
-    int             echoes;
+    unsigned int    echoes;
     short           multichannel;
 };
 
