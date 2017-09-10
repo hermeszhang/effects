@@ -56,8 +56,8 @@ typedef int32_t         DSP_SAMPLE;
 typedef struct {
     DSP_SAMPLE * __restrict__ data;
     DSP_SAMPLE * __restrict__ data_swap;
-    int_fast32_t    len;
-    int_fast8_t     channels;
+    uint_fast32_t    len;
+    uint_fast8_t     channels;
 } data_block_t;
 
 struct audio_driver_channels {
