@@ -127,6 +127,7 @@ echo_done(struct effect *p)
         }
     }
 
+    free(params);
     free(p);
 }
 
