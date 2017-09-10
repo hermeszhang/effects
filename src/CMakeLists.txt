@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6)
 
 add_library("gnu-guitar-effects" SHARED
   "audio-driver.h"
-  "audio-driver.c"
   "backbuf.h"
   "backbuf.c"
   "echo.h"
