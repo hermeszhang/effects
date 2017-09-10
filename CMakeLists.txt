@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 if (CMAKE_COMPILER_IS_GNUCC)
-  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors")
+  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -Wl,-z,defs")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
