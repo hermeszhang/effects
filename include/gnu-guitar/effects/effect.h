@@ -47,6 +47,11 @@ struct effect {
 
 typedef struct effect effect_t;
 
+typedef struct effect gnu_guitar_effect_t;
+
+void gnu_guitar_effect_filter(gnu_guitar_effect_t *effect,
+                              struct gnu_guitar_packet *packet);
+
 #ifdef __GNUC__
 #define unlikely(x) __builtin_expect((x), 0)
 #else

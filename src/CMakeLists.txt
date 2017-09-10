@@ -10,8 +10,20 @@ add_library("gnu-guitar-effects" OBJECT
   "${INCDIR}/echo.h"
   "${SRCDIR}/echo.c"
   "${INCDIR}/effect.h"
+  "${SRCDIR}/effect.c"
   "${INCDIR}/printf.h"
   "${SRCDIR}/printf.c"
   "${INCDIR}/reverb.h"
   "${SRCDIR}/reverb.c")
+
+function (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
+  add_executable(${TEST_NAME} ${ARGN} $<TARGET_OBJECTS:gnu-guitar-effects>)
+  target_link_libraries(${TEST_NAME} "m")
+  add_test(${TEST_NAME} ${TEST_NAME})
+endfunction (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
+
+add_gnu_guitar_effects_test("echo-test" "echo-test.c")
+add_gnu_guitar_effects_test("reverb-test" "reverb-test.c")
+
+enable_testing()
 
