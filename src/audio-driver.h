@@ -45,6 +45,8 @@
 
 #define MAX_SAMPLE (32767 << 8)
 
+#define FLOAT_DSP
+
 #ifdef FLOAT_DSP
 typedef float           DSP_SAMPLE;
 #else
