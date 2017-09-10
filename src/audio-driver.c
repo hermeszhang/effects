@@ -122,8 +122,9 @@ guess_audio_driver(void)
 }
 
 void
-set_audio_driver_from_str(const char const *tmp)
+set_audio_driver_from_str(const char *tmp)
 {
+    (void) tmp;
 #ifdef HAVE_JACK
     if (strcmp(tmp, "JACK") == 0) {
         audio_driver = &jack_driver;
