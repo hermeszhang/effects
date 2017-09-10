@@ -13,7 +13,7 @@ before_build:
   - cmd: cd build\%platform%
   - cmd: if "%platform%"=="x86" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017
   - cmd: if "%platform%"=="x64" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017 Win64
-  - cmd: cmake ..\.. -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration%
+  - cmd: cmake ..\.. -G "%CMAKE_GENERATOR_NAME%"
 
 build:
   project: build\%platform%\ALL_BUILD.vcxproj
