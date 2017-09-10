@@ -24,3 +24,9 @@ void gnu_guitar_effect_filter(gnu_guitar_effect_t *effect,
   effect->proc_filter(effect, packet);
 }
 
+void gnu_guitar_effect_free(gnu_guitar_effect_t *effect) {
+  if (effect->proc_done != NULL) {
+    effect->proc_done(effect);
+  }
+}
+

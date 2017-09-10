@@ -16,9 +16,13 @@ add_library("gnu-guitar-effects" OBJECT
   "${INCDIR}/reverb.h"
   "${SRCDIR}/reverb.c")
 
+add_library("gnu-guitar-effects-test"
+  "test.h"
+  "test.c")
+
 function (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
   add_executable(${TEST_NAME} ${ARGN} $<TARGET_OBJECTS:gnu-guitar-effects>)
-  target_link_libraries(${TEST_NAME} "m")
+  target_link_libraries(${TEST_NAME} "m" "gnu-guitar-effects-test")
   add_test(${TEST_NAME} ${TEST_NAME})
 endfunction (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
 
