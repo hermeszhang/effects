@@ -38,10 +38,6 @@
 
 #include <stdint.h>
 
-#ifdef _MSC_VER
-#define restrict __restrict
-#endif
-
 #define MAX_SAMPLE (32767 << 8)
 #define MAX_CHANNELS 8
 #define MAX_SAMPLE_RATE 48000
@@ -54,11 +50,23 @@ typedef float gnu_guitar_sample_t;
 
 #define DSP_SAMPLE gnu_guitar_sample_t
 
-typedef struct gnu_guitar_data_block {
-  gnu_guitar_sample_t * restrict data;
-  gnu_guitar_sample_t * restrict data_swap;
-  uint_fast32_t    len;
-  uint_fast8_t     channels;
-} data_block_t;
+/** @brief Used for containing audio
+ * samples. */
+struct gnu_guitar_packet {
+  /** @brief Where the input data is
+   * read from the filters. */
+  gnu_guitar_sample_t * data;
+  /** @brief Where the output data is
+   * written from the filters. */
+  gnu_guitar_sample_t * data_swap;
+  /** @brief Number of frames in the
+   * data buffers. */
+  uint_fast32_t len;
+  /** @brief Number of samples per frame. */
+  uint_fast8_t channels;
+};
+
+/** @brief For compatibility. */
+typedef struct gnu_guitar_packet data_block_t;
 
 #endif
