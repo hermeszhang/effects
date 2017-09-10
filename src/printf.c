@@ -22,22 +22,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <glib.h>
-
-//function for printing debuging messages
-//if GUI isn't created, text will be buffered
-void 
-gnuitar_printf(const char *frm, ...)
-{
-    va_list args;
-    gchar *tmp;
-
-    va_start(args, frm);
-    tmp = g_strdup_vprintf(frm, args);
-    va_end(args);
-
-    fprintf(stderr, "%s", tmp);
-
-    g_free(tmp);
+/** @brief Used for compatibility. */
+void gnuitar_printf(const char *frm, ...) {
+  va_list args;
+  va_start(args, frm);
+  vprintf(frm, args);
+  va_end(args);
 }
 

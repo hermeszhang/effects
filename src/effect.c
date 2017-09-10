@@ -41,8 +41,6 @@
 #include "tuner.h"
 #endif
 
-#include <gnu-guitar/effects/utils.h>
-
 static effect_t       *effects[MAX_EFFECTS];
 static int             effects_n = 0;
 static my_mutex        effectlist_lock;

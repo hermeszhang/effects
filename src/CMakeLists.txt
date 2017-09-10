@@ -10,9 +10,6 @@ add_library("gnu-guitar-effects" OBJECT
   "${INCDIR}/echo.h"
   "${SRCDIR}/echo.c"
   "${INCDIR}/effect.h"
-  "${SRCDIR}/effect.c"
   "${INCDIR}/printf.h"
-  "${SRCDIR}/printf.c"
-  "${INCDIR}/utils.h"
-  "${SRCDIR}/utils.c")
+  "${SRCDIR}/printf.c")
 

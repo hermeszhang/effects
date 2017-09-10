@@ -130,28 +130,6 @@ echo_done(struct effect *p)
     free(p);
 }
 
-static void
-echo_save(struct effect *p, SAVE_ARGS)
-{
-    struct echo_params *params = p->params;
-
-    SAVE_DOUBLE("echo_size", params->echo_size);
-    SAVE_DOUBLE("echo_decay", params->echo_decay);
-    SAVE_INT("echoes", params->echoes);
-    SAVE_INT("multichannel", params->multichannel);
-}
-
-static void
-echo_load(struct effect *p, LOAD_ARGS)
-{
-    struct echo_params *params = p->params;
-
-    LOAD_DOUBLE("echo_size", params->echo_size);
-    LOAD_DOUBLE("echo_decay", params->echo_decay);
-    LOAD_INT("echoes", params->echoes);
-    LOAD_INT("multichannel", params->multichannel);
-}
-
 effect_t *
 echo_create()
 {
@@ -163,8 +141,6 @@ echo_create()
     p->params = calloc(1, sizeof(*params));
     p->proc_init = echo_init;
     p->proc_filter = echo_filter;
-    p->proc_save = echo_save;
-    p->proc_load = echo_load;
     p->toggle = 0;
     p->proc_done = echo_done;
 

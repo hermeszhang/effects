@@ -36,17 +36,15 @@
 
 #include <gnu-guitar/effects/data-block.h>
 #include <gnu-guitar/effects/printf.h>
-#include <gnu-guitar/effects/utils.h>
 
 struct effect {
-    void           *params;
-    void            (*proc_init) (struct effect *);
-    void            (*proc_done) (struct effect *);
-    void            (*proc_filter) (struct effect *, data_block_t *);
-    void            (*proc_save) (struct effect *, GKeyFile *, gchar *);
-    void            (*proc_load) (struct effect *, GKeyFile *, gchar *, GError **error);
-    short           toggle;
+  void *params;
+  void (*proc_init) (struct effect *);
+  void (*proc_done) (struct effect *);
+  void (*proc_filter) (struct effect *, data_block_t *);
+  short toggle;
 };
+
 typedef struct effect effect_t;
 
 #ifdef __GNUC__

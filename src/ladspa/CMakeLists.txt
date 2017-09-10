@@ -8,7 +8,7 @@ add_library("gnu-guitar-ladspa" SHARED
 set_target_properties("gnu-guitar-ladspa" PROPERTIES PREFIX "")
 
 if (UNIX)
-  target_link_libraries("gnu-guitar-ladspa" "m" ${GLIB2_LIBRARIES})
+  target_link_libraries("gnu-guitar-ladspa" "m")
 endif (UNIX)
 
 install(TARGETS "gnu-guitar-ladspa"
