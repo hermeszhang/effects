@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "printf.h"
+#include <gnu-guitar/effects/printf.h>
 
 #include <stdio.h>
 #include <stdarg.h>
