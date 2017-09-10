@@ -3,10 +3,13 @@
 #include <stdlib.h>
 
 extern const LADSPA_Descriptor echo_descriptor;
+extern const LADSPA_Descriptor reverb_descriptor;
 
 const LADSPA_Descriptor *ladspa_descriptor(unsigned long int index) {
   if (index == 0)
     return &echo_descriptor;
+  else if (index == 1)
+    return &reverb_descriptor;
   else
     return NULL;
 }

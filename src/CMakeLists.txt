@@ -11,5 +11,7 @@ add_library("gnu-guitar-effects" OBJECT
   "${SRCDIR}/echo.c"
   "${INCDIR}/effect.h"
   "${INCDIR}/printf.h"
-  "${SRCDIR}/printf.c")
+  "${SRCDIR}/printf.c"
+  "${INCDIR}/reverb.h"
+  "${SRCDIR}/reverb.c")
 

@@ -29,153 +29,18 @@
 #    include <unistd.h>
 #endif
 
-#include "reverb.h"
-#include "gui.h"
+#include <gnu-guitar/effects/reverb.h>
 
-#define MAX_REVERB_SIZE  3000 /* ms */
+extern unsigned int sample_rate;
 
-static void
-update_reverb_drywet(GtkAdjustment *adj, struct reverb_params *params)
-{
-    params->drywet = adj->value;
-}
-
-static void
-update_reverb_delay(GtkAdjustment *adj, struct reverb_params *params)
-{
-    params->delay = adj->value;
-}
-
-static void
-update_reverb_regen(GtkAdjustment *adj, struct reverb_params *params)
-{
-    params->regen = adj->value;
-}
-
-static void
-reverb_init(struct effect *p)
-{
-    struct reverb_params *preverb;
-
-    GtkWidget      *drywet;
-    GtkWidget      *drywet_label;
-    GtkObject      *adj_drywet;
-
-    GtkWidget      *delay;
-    GtkWidget      *delay_label;
-    GtkObject      *adj_delay;
-
-    GtkWidget      *regen;
-    GtkWidget      *regen_label;
-    GtkObject      *adj_regen;
-
-    GtkWidget      *button;
-
-    GtkWidget      *parmTable;
-
-    preverb = (struct reverb_params *) p->params;
-
-    /*
-     * GUI Init
-     */
-    p->control = gtk_window_new(GTK_WINDOW_DIALOG);
-
-    gtk_signal_connect(GTK_OBJECT(p->control), "delete_event",
-		       GTK_SIGNAL_FUNC(delete_event), p);
-
-    parmTable = gtk_table_new(4, 3, FALSE);
-
-    adj_delay = gtk_adjustment_new(preverb->delay, 1.0, MAX_REVERB_SIZE, 1.0, 1.0, 0.0);
-    delay_label = gtk_label_new("delay\nms");
-    gtk_table_attach(GTK_TABLE(parmTable), delay_label, 0, 1, 0, 1,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_delay), "value_changed",
-		       GTK_SIGNAL_FUNC(update_reverb_delay), preverb);
-
-    delay = gtk_vscale_new(GTK_ADJUSTMENT(adj_delay));
-    gtk_widget_set_size_request(GTK_WIDGET(delay),0,100);
-
-    gtk_table_attach(GTK_TABLE(parmTable), delay, 0, 1, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-    adj_drywet = gtk_adjustment_new(preverb->drywet, 0.0, 100.0, 1.0, 1.0, 0.0);
-    drywet_label = gtk_label_new("Dry/Wet\n%");
-    gtk_table_attach(GTK_TABLE(parmTable), drywet_label, 2, 3, 0, 1,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_drywet), "value_changed",
-		       GTK_SIGNAL_FUNC(update_reverb_drywet), preverb);
-
-    drywet = gtk_vscale_new(GTK_ADJUSTMENT(adj_drywet));
-
-    gtk_table_attach(GTK_TABLE(parmTable), drywet, 2, 3, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-
-    adj_regen = gtk_adjustment_new(preverb->regen, 0.0, 100.0, 1.0, 1.0, 0.0);
-    regen_label = gtk_label_new("regen\n%");
-    gtk_table_attach(GTK_TABLE(parmTable), regen_label, 3, 4, 0, 1,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_regen), "value_changed",
-		       GTK_SIGNAL_FUNC(update_reverb_regen), preverb);
-
-    regen = gtk_vscale_new(GTK_ADJUSTMENT(adj_regen));
-
-    gtk_table_attach(GTK_TABLE(parmTable), regen, 3, 4, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-    button = gtk_check_button_new_with_label("On");
-    gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		       GTK_SIGNAL_FUNC(toggle_effect), p);
-
-    gtk_table_attach(GTK_TABLE(parmTable), button, 0, 1, 2, 3,
-		     __GTKATTACHOPTIONS
-		     (GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_SHRINK), 0, 0);
-    if (p->toggle == 1) {
-	p->toggle = 0;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
-    }
-
-    gtk_window_set_title(GTK_WINDOW(p->control),
-			 (gchar *) ("Reverberator"));
-    gtk_container_add(GTK_CONTAINER(p->control), parmTable);
-
-    gtk_widget_show_all(p->control);
-
+static void reverb_init(struct effect *p) {
+  (void) p;
 }
 
 /* backbuf-based allpass filter for longer than 1 or 2 sample delays.
  * This */
-static double
-allpass_filter(double input, double factor, int delay, Backbuf_t *history)
-{
+static double allpass_filter(double input, double factor, int delay, Backbuf_t *history) {
     double tmp, output;
-
     // delay - 1 because 0th is already the previous, so someone asking
     // for the previous sample is really asking for the 0th sample until
     // add() is performed
@@ -185,25 +50,23 @@ allpass_filter(double input, double factor, int delay, Backbuf_t *history)
     return output;
 }
 
-static double
-comb_filter(double input, double factor, int delay, Backbuf_t *history)
-{
+static double comb_filter(double input, double factor, int delay, Backbuf_t *history) {
     double output;
     history->add(history, input); // 0th is current, -1 is previous
     output = input + factor * history->get(history, delay);
     return output;
 }
 
-static void
-reverb_filter(struct effect *p, data_block_t *db)
-{
+static void reverb_filter(struct effect *p, data_block_t *db) {
     struct reverb_params *params = p->params;
-    DSP_SAMPLE     *s;
-    int             count,
-                    c = 0; /* curr_channel */
-    float           input, a, mono, Dry, Wet, Rgn, Delay, fsr;
+    DSP_SAMPLE *s;
+    DSP_SAMPLE *outs;
+    int count;
+    int c = 0; /* curr_channel */
+    float input, a, mono, Dry, Wet, Rgn, Delay, fsr;
 
     s = db->data;
+    outs = db->data_swap;
     count = db->len;
 
     Delay = params->delay / 1000.0 * sample_rate;
@@ -261,17 +124,16 @@ reverb_filter(struct effect *p, data_block_t *db)
         
         params->history[c]->add(params->history[c], mono / 6.0);
         
-        *s = *s * Dry + mono * Wet;
+        *outs = *s * Dry + mono * Wet;
 
         c = (c + 1) % db->channels;
+        outs++;
         s++;
         count--;
     }
 }
 
-static void
-reverb_done(struct effect *p)
-{
+static void reverb_done(struct effect *p) {
     struct reverb_params *dr;
     int             i;
     
@@ -286,28 +148,7 @@ reverb_done(struct effect *p)
     }
     
     free(p->params);
-    gtk_widget_destroy(p->control);
     free(p);
-}
-
-static void
-reverb_save(struct effect *p, SAVE_ARGS)
-{
-    struct reverb_params *params = p->params;
-
-    SAVE_DOUBLE("drywet", params->drywet);
-    SAVE_DOUBLE("regen", params->regen);
-    SAVE_DOUBLE("delay", params->delay);
-}
-
-static void
-reverb_load(struct effect *p, LOAD_ARGS)
-{
-    struct reverb_params *params = p->params;
-
-    LOAD_DOUBLE("drywet", params->drywet);
-    LOAD_DOUBLE("regen", params->regen);
-    LOAD_DOUBLE("delay", params->delay);
 }
 
 effect_t *
@@ -324,8 +165,6 @@ reverb_create()
     p->proc_filter = reverb_filter;
     p->toggle = 0;
     p->proc_done = reverb_done;
-    p->proc_load = reverb_load;
-    p->proc_save = reverb_save;
     dr = (struct reverb_params *) p->params;
     for (i = 0; i < MAX_CHANNELS; i += 1) {
         dr->history[i] = new_Backbuf(MAX_REVERB_SIZE / 1000.0 * MAX_SAMPLE_RATE);

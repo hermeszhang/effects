@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 add_library("gnu-guitar-ladspa" SHARED
   $<TARGET_OBJECTS:gnu-guitar-effects>
   "ladspa-descriptor.c"
-  "echo.c")
+  "echo.c"
+  "reverb.c")
 
 set_target_properties("gnu-guitar-ladspa" PROPERTIES PREFIX "")
 

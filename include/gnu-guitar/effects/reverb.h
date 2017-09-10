@@ -28,19 +28,24 @@
 
 effect_t *   reverb_create(void);
 
+#define MAX_REVERB_SIZE 3000
+
 struct reverbBuffer {
-    DSP_SAMPLE     *data;
-    int             nChunks;
-    int             nCursor;
+  DSP_SAMPLE *data;
+  int nChunks;
+  int nCursor;
 };
 
 struct reverb_params {
-    Backbuf_t      *history[MAX_CHANNELS];
-    Backbuf_t      *ap[MAX_CHANNELS][3];
-    Backbuf_t      *comb[MAX_CHANNELS];
-    double          drywet,
-                    regen,
-                    delay;
+  Backbuf_t *history[MAX_CHANNELS];
+  Backbuf_t *ap[MAX_CHANNELS][3];
+  Backbuf_t *comb[MAX_CHANNELS];
+  /** @brief Dry and wet balance */
+  double drywet;
+  /** @brief Decay */
+  double regen;
+  /** @brief Delay */
+  double delay;
 };
 
 #endif
