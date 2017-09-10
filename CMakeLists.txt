@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 if (CMAKE_COMPILER_IS_GNUCC)
-  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -Wl,-z,defs")
+  set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -fPIC -Wl,-z,defs")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 include_directories("include")
@@ -13,4 +13,5 @@ find_package(Glib2 REQUIRED)
 include_directories(${GLIB2_INCLUDE_DIRS})
 
 add_subdirectory("src")
+add_subdirectory("src/ladspa")
 

@@ -1,7 +1,7 @@
-#include "ladspa.h"
-
 #include <gnu-guitar/effects/echo.h>
 #include <gnu-guitar/effects/effect.h>
+
+#include <ladspa.h>
 
 #include <stdlib.h>
 
@@ -19,6 +19,12 @@ struct ladspa_data {
   unsigned long int sample_rate;
   /** @brief The number of echos. */
   float *echo_count;
+  /** @brief Volume of each consecutive
+   * echo is reduced by this factor. */
+  float *echo_decay;
+  /** @brief The duration of the echo, in
+   * terms of milliseconds.  */
+  float *echo_time;
 };
 
 static void echo_connect_port(LADSPA_Handle instance,
@@ -39,17 +45,23 @@ static void echo_connect_port(LADSPA_Handle instance,
     data->echo_count = data_location;
   } else if (port == 3) {
     /* Decay */
+    data->echo_decay = data_location;
+  } else if (port == 4) {
+    /* Time */
+    data->echo_time = data_location;
   }
 }
 /* echo descriptor */
 
 extern const LADSPA_Descriptor echo_descriptor;
 
-static LADSPA_Handle gnu_guitar_instantiate(const LADSPA_Descriptor *descriptor, unsigned long int sample_rate) {
+static LADSPA_Handle echo_instantiate(const LADSPA_Descriptor *descriptor, unsigned long int sample_rate) {
   struct ladspa_data *data = NULL;
   if (descriptor == &echo_descriptor) {
     data = malloc(sizeof(*data));
     data->echo_count = NULL;
+    data->echo_decay = NULL;
+    data->echo_time = NULL;
     data->sample_rate = sample_rate;
     data->db.len = 0;
     data->db.channels = 1;
@@ -60,20 +72,24 @@ static LADSPA_Handle gnu_guitar_instantiate(const LADSPA_Descriptor *descriptor,
   }
 }
 
-const char *echo_port_names[] = {
+const char *port_names[] = {
   "Input",
   "Output",
   "Echo Count",
+  "Decay",
+  "Time",
   NULL
 };
 
-LADSPA_PortDescriptor echo_port_descriptors[] = {
+LADSPA_PortDescriptor port_descriptors[] = {
   LADSPA_PORT_AUDIO | LADSPA_PORT_INPUT /* Input */,
   LADSPA_PORT_AUDIO | LADSPA_PORT_OUTPUT /* Output */,
   LADSPA_PORT_CONTROL /* Echo Count */,
+  LADSPA_PORT_CONTROL /* Decay */,
+  LADSPA_PORT_CONTROL /* Time */,
 };
 
-LADSPA_PortRangeHint echo_port_range_hints[] = {
+LADSPA_PortRangeHint port_range_hints[] = {
   /* Input */ {
     LADSPA_HINT_DEFAULT_NONE,
     0 /* LowerBound */,
@@ -88,14 +104,24 @@ LADSPA_PortRangeHint echo_port_range_hints[] = {
     LADSPA_HINT_INTEGER | LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE,
     0 /* LowerBound */,
     4 /* UpperBound */
+  },
+  /* Decay */ {
+    LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE,
+    0 /* LowerBound */,
+    100 /* UpperBound */
+  },
+  /* Time */ {
+    LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE,
+    0 /* LowerBound */,
+    MAX_ECHO_LENGTH /* UpperBound */
   }
 };
 
-static void gnu_guitar_activate(LADSPA_Handle instance) {
+static void echo_activate(LADSPA_Handle instance) {
   (void) instance;
 }
 
-static void gnu_guitar_run(LADSPA_Handle instance, unsigned long int sample_count) {
+static void echo_run(LADSPA_Handle instance, unsigned long int sample_count) {
 
   struct ladspa_data *data;
   struct echo_params *echo_params;
@@ -106,9 +132,15 @@ static void gnu_guitar_run(LADSPA_Handle instance, unsigned long int sample_coun
 
   if (data->echo_count != NULL) {
     echo_params = (struct echo_params *) data->effect->params;
-    printf("before: %u\n", echo_params->echoes);
-    echo_params->echoes = (int) *data->echo_count;
-    printf("after: %u\n", echo_params->echoes);
+    echo_params->echoes = (unsigned int) *data->echo_count;
+  }
+  if (data->echo_decay != NULL) {
+    echo_params = (struct echo_params *) data->effect->params;
+    echo_params->echo_decay = (float) *data->echo_decay;
+  }
+  if (data->echo_time != NULL) {
+    echo_params = (struct echo_params *) data->effect->params;
+    echo_params->echo_size = (double) *data->echo_time;
   }
 
   data->db.len = sample_count / data->db.channels;
@@ -123,25 +155,18 @@ const LADSPA_Descriptor echo_descriptor = {
   "GNU Guitar Echo" /* Name */,
   "GNU Guitar" /* Maker */,
   "GPLv2" /* Copyright */,
-  3 /* PortCount */,
-  echo_port_descriptors /* PortDescriptors */,
-  echo_port_names /* PortNames */,
-  echo_port_range_hints /* PortRangeHints */,
+  sizeof(port_descriptors) / sizeof(port_descriptors[0]) /* PortCount */,
+  port_descriptors /* PortDescriptors */,
+  port_names /* PortNames */,
+  port_range_hints /* PortRangeHints */,
   NULL /* ImplementationData */,
-  gnu_guitar_instantiate /* instantiate */,
+  echo_instantiate /* instantiate */,
   echo_connect_port /* connect_port */,
-  gnu_guitar_activate /* activate */,
-  gnu_guitar_run /* run */,
+  echo_activate /* activate */,
+  echo_run /* run */,
   NULL /* run_adding */,
   NULL /* run_adding_gain */,
   NULL /* deactivate */,
   NULL /* cleanup */
 };
-
-const LADSPA_Descriptor *ladspa_descriptor(unsigned long int index) {
-  if (index == 0)
-    return &echo_descriptor;
-  else
-    return NULL;
-}
 

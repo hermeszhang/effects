@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 2.6)
+
+add_library("gnu-guitar-ladspa" SHARED
+  $<TARGET_OBJECTS:gnu-guitar-effects>
+  "ladspa-descriptor.c"
+  "echo.c")
+
+set_target_properties("gnu-guitar-ladspa" PROPERTIES PREFIX "")
+
+if (UNIX)
+  target_link_libraries("gnu-guitar-ladspa" "m" ${GLIB2_LIBRARIES})
+endif (UNIX)
+
+install(TARGETS "gnu-guitar-ladspa"
+  RUNTIME DESTINATION "bin/ladspa"
+  ARCHIVE DESTINATION "lib/ladspa"
+  LIBRARY DESTINATION "lib/ladspa")
+

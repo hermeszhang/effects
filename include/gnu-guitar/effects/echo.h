@@ -26,20 +26,26 @@
 #include "effect.h"
 #include "backbuf.h"
 
-#define MAX_ECHO_COUNT  4
+#define MAX_ECHO_COUNT 4
 #define MAX_ECHO_LENGTH 500 /* ms */
 
-effect_t *   echo_create(void);
+effect_t * echo_create(void);
 
 struct echo_params {
-    Backbuf_t       *history[MAX_CHANNELS][MAX_ECHO_COUNT];
-    double          primes[MAX_ECHO_COUNT];
-    double          size_factor[MAX_ECHO_COUNT];
-    double          decay_factor[MAX_ECHO_COUNT];
-    double          echo_size,
-                    echo_decay;
-    unsigned int    echoes;
-    short           multichannel;
+    Backbuf_t *history[MAX_CHANNELS][MAX_ECHO_COUNT];
+    double primes[MAX_ECHO_COUNT];
+    double size_factor[MAX_ECHO_COUNT];
+    double decay_factor[MAX_ECHO_COUNT];
+    /** @brief Length of the echo, in milliseconds. */
+    double echo_size;
+    /** @brief Each echo reduces in volume. The amount
+     * of volume reduced is determined by the decay. This
+     * value should be between zero and one hundred. */
+    double echo_decay;
+    /** @brief The number of echoes that occur. */
+    unsigned int echoes;
+    /** @deprecated */
+    short multichannel;
 };
 
 #endif
