@@ -17,7 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "echo.h"
+#include <gnu-guitar/effects/echo.h>
+
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>

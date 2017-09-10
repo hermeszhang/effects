@@ -65,7 +65,8 @@
  *
  */
 
-#include "backbuf.h"
+#include <gnu-guitar/effects/backbuf.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>

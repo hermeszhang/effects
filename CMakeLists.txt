@@ -4,6 +4,8 @@ if (CMAKE_COMPILER_IS_GNUCC)
   set (CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wfatal-errors -Wl,-z,defs")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
+include_directories("include")
+
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(Glib2 REQUIRED)

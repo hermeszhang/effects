@@ -34,9 +34,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "audio-driver.h"
-#include "printf.h"
-#include "utils.h"
+#include <gnu-guitar/effects/data-block.h>
+#include <gnu-guitar/effects/printf.h>
+#include <gnu-guitar/effects/utils.h>
 
 struct effect {
     void           *params;

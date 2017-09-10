@@ -17,9 +17,9 @@
  *
  */
 
-#include "effect.h"
+#include <gnu-guitar/effects/effect.h>
 
-#include "echo.h"
+#include <gnu-guitar/effects/echo.h>
 
 #if 0
 #include "amp.h"
@@ -41,7 +41,7 @@
 #include "tuner.h"
 #endif
 
-#include "utils.h"
+#include <gnu-guitar/effects/utils.h>
 
 static effect_t       *effects[MAX_EFFECTS];
 static int             effects_n = 0;

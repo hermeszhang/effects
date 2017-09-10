@@ -1,19 +1,22 @@
 cmake_minimum_required(VERSION 2.6)
 
+set (INCDIR "${PROJECT_SOURCE_DIR}/include/gnu-guitar/effects")
+set (SRCDIR "${PROJECT_SOURCE_DIR}/src")
+
 add_library("gnu-guitar-effects" SHARED
-  "audio-driver.h"
-  "backbuf.h"
-  "backbuf.c"
-  "echo.h"
-  "echo.c"
-  "effect.h"
-  "effect.c"
+  "${INCDIR}/data-block.h"
+  "${INCDIR}/backbuf.h"
+  "${SRCDIR}/backbuf.c"
+  "${INCDIR}/echo.h"
+  "${SRCDIR}/echo.c"
+  "${INCDIR}/effect.h"
+  "${SRCDIR}/effect.c"
   "ladspa.h"
   "ladspa.c"
-  "printf.h"
-  "printf.c"
-  "utils.h"
-  "utils.c")
+  "${INCDIR}/printf.h"
+  "${SRCDIR}/printf.c"
+  "${INCDIR}/utils.h"
+  "${SRCDIR}/utils.c")
 
 if (UNIX)
   target_link_libraries("gnu-guitar-effects" "m")

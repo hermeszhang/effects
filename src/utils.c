@@ -58,7 +58,8 @@
  * Utility constants and functions.
  *
  */
-#include "utils.h"
+
+#include <gnu-guitar/effects/utils.h>
 
 #ifndef _WIN32
 inline void my_create_mutex(my_mutex* m) {
