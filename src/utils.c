@@ -62,7 +62,7 @@
 
 #ifndef _WIN32
 inline void my_create_mutex(my_mutex* m) {
-    *m=g_mutex_new();
+    g_mutex_init(*m);
 }
 
 inline void my_lock_mutex(my_mutex m) {
@@ -74,7 +74,7 @@ inline void my_unlock_mutex(my_mutex m) {
 }
 
 inline void my_close_mutex(my_mutex m) {
-    g_mutex_free(m);
+    g_mutex_clear(m);
 }
 
 #else
