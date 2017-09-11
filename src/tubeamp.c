@@ -213,8 +213,14 @@ extern unsigned int sample_rate;
 #define UPSAMPLE_RATIO 6
 #define IMPULSE_SIZE   512
 
+#ifdef __GNUC__
+#define ALIGNED(n) __attribute__((aligned(n)))
+#else
+#define ALIGNED(n)
+#endif
+
 /* Marshall G15R */
-static const DSP_SAMPLE __attribute__((aligned(16))) impulse_g15r[IMPULSE_SIZE] = {
+static const DSP_SAMPLE ALIGNED(16) impulse_g15r[IMPULSE_SIZE] = {
   4405,  17364,  30475,  33517,  28810,  20846,   9309,  -4045, -13421, -13737,  -6939,
   -644,   2381,   4726,   4890,   -577,  -8708, -13224, -11835,  -6840,   -805,   5847,
  11158,  10895,   3963,  -5524, -11923, -13616, -12717,  -9577,  -4247,   -180,    568,
@@ -265,7 +271,7 @@ static const DSP_SAMPLE __attribute__((aligned(16))) impulse_g15r[IMPULSE_SIZE] 
 };
 
 /* Princeton II */
-static const DSP_SAMPLE __attribute__((aligned(16))) impulse_princeton2[IMPULSE_SIZE] = {
+static const DSP_SAMPLE ALIGNED(16) impulse_princeton2[IMPULSE_SIZE] = {
   2799,  11631,  23881,  32811,  34786,  30693,  22401,  12097,   3608,    333,   1986,
   5050,   5906,   3149,  -2263,  -7957, -11151,  -9808,  -4421,   1179,   2345,  -1974,
  -8064, -11426, -10826,  -7845,  -4476,  -2085,  -1307,  -1743,  -2306,  -2291,  -1539,
