@@ -257,7 +257,9 @@ DSP_SAMPLE fir_decimate_2x(DSP_SAMPLE *mem, const DSP_SAMPLE in1, const DSP_SAMP
 #if defined(__SSE__)
 
 static inline float
+#ifdef __GNUC__
 __attribute__ ((nonnull(2)))
+#endif
 do_biquad(const float x, Biquad_t *f, const int c)
 {
     __m128          r;
@@ -301,7 +303,9 @@ do_biquad(const float x, Biquad_t *f, const int c)
 /* important: a is aligned to 16-byte boundary but b is not.
  * Therefore, movups must be used to access that memory. */
 static inline float
+#ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
+#endif
 convolve(const float *a, const float *b, const int len)
 {
     __m128 r = { 0, 0, 0, 0 };
@@ -345,7 +349,9 @@ convolve(const float *a, const float *b, const int len)
 }
 
 static inline float
+#ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
+#endif
 convolve_aligned (const float *a, const float *b, const int len)
 {
     __m128 r = { 0, 0, 0, 0 };
@@ -386,7 +392,9 @@ convolve_aligned (const float *a, const float *b, const int len)
 #define DENORMAL_BIAS   1E-5f
 
 static inline float
+#ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
+#endif
 convolve(const DSP_SAMPLE *a, const DSP_SAMPLE *b, const int len)
 {
     int i;
@@ -398,14 +406,18 @@ convolve(const DSP_SAMPLE *a, const DSP_SAMPLE *b, const int len)
 }
 
 static inline float
+#ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
+#endif
 convolve_aligned(const DSP_SAMPLE *a, const DSP_SAMPLE *b, const int len)
 {
     return convolve(a, b, len);
 }
 
 static inline float
+#ifdef __GNUC__
 __attribute__ ((nonnull(2)))
+#endif
 do_biquad(const float x, Biquad_t *f, const int c)
 {
     float *mem = f->mem[c], y;
