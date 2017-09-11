@@ -43,8 +43,6 @@
 #define __restrict__
 #endif
 
-#define MAX_SAMPLE (32767 << 8)
-
 #define FLOAT_DSP
 
 #ifdef FLOAT_DSP
