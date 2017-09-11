@@ -34,26 +34,32 @@ effect_t *tubeamp_create(void);
 
 struct tubeamp_params {
     /* internal state variables */
-    Biquad_t    highpass[MAX_STAGES];
-    Biquad_t    lowpass[MAX_STAGES];
-    Biquad_t    biaslowpass[MAX_STAGES];
-    Biquad_t    bq_bass, bq_middle, bq_treble;
-    Biquad_t    decimation_filter;
+    Biquad_t highpass[MAX_STAGES];
+    Biquad_t lowpass[MAX_STAGES];
+    Biquad_t biaslowpass[MAX_STAGES];
+    Biquad_t bq_bass, bq_middle, bq_treble;
+    Biquad_t decimation_filter;
 
     /* user parameters */
-    unsigned int stages, impulse_model, impulse_quality;
-    float       gain, asymmetry, biasfactor;
-    float       tone_bass, tone_middle, tone_treble;
+    unsigned int stages;
+    unsigned int impulse_model;
+    unsigned int impulse_quality;
+    float gain;
+    float asymmetry;
+    float biasfactor;
+    float tone_bass;
+    float tone_middle;
+    float tone_treble;
     
     /* internal stuff */
-    float       bias[MAX_STAGES];
-    float       r_i[MAX_STAGES], r_k_p[MAX_STAGES];
+    float bias[MAX_STAGES];
+    float r_i[MAX_STAGES], r_k_p[MAX_STAGES];
     
     /* effect state stuff */
-    float       in[MAX_CHANNELS];
+    float in[MAX_CHANNELS];
     /* convolution buffer */
-    DSP_SAMPLE  *buf[MAX_CHANNELS];
-    int_fast16_t    bufidx[MAX_CHANNELS];
+    DSP_SAMPLE *buf[MAX_CHANNELS];
+    int_fast16_t bufidx[MAX_CHANNELS];
 };
 
 #endif
