@@ -10,7 +10,11 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
   # MSVC warning 4244 warns about implicit conversions. While this
   # should actually be enabled, the project contains too many harmless
   # implicit conversions at the time of writing this.
-  set (CMAKE_C_FLAGS "/W3 /WX /D_CRT_SECURE_NO_WARNINGS /wd4244")
+  #
+  # The 4305 warning is caused by 'double' to 'float' truncation. Since
+  # the audio sample type is 'float' and most control values are 'double',
+  # this is bound to happen and can be ignored.
+  set (CMAKE_C_FLAGS "/W3 /WX /D_CRT_SECURE_NO_WARNINGS /wd4244 /wd4305")
 endif ()
 
 include_directories("include")
