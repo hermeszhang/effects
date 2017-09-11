@@ -150,7 +150,7 @@
 #include <math.h>
 
 #ifdef _WIN32
-#include "utils.h"
+#include <gnu-guitar/effects/utils.h>
 #endif
 
 /* peaking band equalizer */
