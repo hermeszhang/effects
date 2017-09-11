@@ -4,7 +4,8 @@ add_library("gnu-guitar-ladspa" SHARED
   $<TARGET_OBJECTS:gnu-guitar-effects>
   "ladspa-descriptor.c"
   "echo.c"
-  "reverb.c")
+  "reverb.c"
+  "tubeamp.c")
 
 set_target_properties("gnu-guitar-ladspa" PROPERTIES PREFIX "")
 
