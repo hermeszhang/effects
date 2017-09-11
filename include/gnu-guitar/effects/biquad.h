@@ -205,7 +205,7 @@
 #include <pmmintrin.h>
 #endif
 
-#if defined(__SSE__) && defined(FLOAT_DSP)
+#if defined(__SSE__)
 
 typedef struct {
     union {
@@ -254,7 +254,7 @@ void     hilbert_init(Hilbert_t *h);
 void     fir_interpolate_2x(DSP_SAMPLE *mem, const DSP_SAMPLE in, DSP_SAMPLE *o1, DSP_SAMPLE *o2);
 DSP_SAMPLE fir_decimate_2x(DSP_SAMPLE *mem, const DSP_SAMPLE in1, const DSP_SAMPLE in2);
 
-#if defined(__SSE__) && defined(FLOAT_DSP)
+#if defined(__SSE__)
 
 static inline float
 __attribute__ ((nonnull(2)))
@@ -323,11 +323,22 @@ convolve(const float *a, const float *b, const int len)
 #endif
         _mm_store_ss(&dot, r);
     }
-    
+
     switch (len % 4) {
-        case 3: dot += a[len - 3] * b[len - 3];
-        case 2: dot += a[len - 2] * b[len - 2];
-        case 1: dot += a[len - 1] * b[len - 1];
+        case 3:
+          dot += a[len - 3] * b[len - 3];
+          dot += a[len - 2] * b[len - 2];
+          dot += a[len - 1] * b[len - 1];
+          break;
+        case 2:
+          dot += a[len - 2] * b[len - 2];
+          dot += a[len - 1] * b[len - 1];
+          break;
+        case 1:
+          dot += a[len - 1] * b[len - 1];
+          break;
+        default:
+          break;
     }
     
     return dot;
@@ -401,7 +412,7 @@ do_biquad(const float x, Biquad_t *f, const int c)
     y = x * f->b0 + mem[0] * f->b[0] + mem[1] * f->b[1]
         + mem[2] * f->b[2] + mem[3] * f->b[3] + DENORMAL_BIAS;
     if (isnan(y))
-	y=0;
+        y=0;
     mem[1] = mem[0];
     mem[0] = x;
     mem[3] = mem[2];
