@@ -572,6 +572,8 @@ tubeamp_filter(struct effect *p, data_block_t *db)
     DSP_SAMPLE *ptr1;
     struct tubeamp_params *params = p->params;
     float gain;
+    float in;
+    float out;
 
     /* update bq states from tone controls */
     set_lsh_biquad(sample_rate * UPSAMPLE_RATIO, 500, params->tone_bass, &params->bq_bass);
@@ -585,7 +587,8 @@ tubeamp_filter(struct effect *p, data_block_t *db)
         float result;
         for (k = 0; k < UPSAMPLE_RATIO; k += 1) {
             /* IIR interpolation */
-            params->in[curr_channel] = (db->data[i] + params->in[curr_channel] * (float) (UPSAMPLE_RATIO-1)) / (float) UPSAMPLE_RATIO;
+            in = db->data[i] * MAX_SAMPLE;
+            params->in[curr_channel] = (in + params->in[curr_channel] * (float) (UPSAMPLE_RATIO-1)) / (float) UPSAMPLE_RATIO;
             result = params->in[curr_channel] / (float) MAX_SAMPLE;
             for (j = 0; j < params->stages; j += 1) {
                 /* gain of the block */
@@ -612,7 +615,9 @@ tubeamp_filter(struct effect *p, data_block_t *db)
         
         /* convolve the output. We put two buffers side-by-side to avoid & in loop. */
         ptr1[IMPULSE_SIZE] = ptr1[0] = result / 500.f * (float) (MAX_SAMPLE >> 13);
-        db->data_swap[i] = convolve(ampmodels[params->impulse_model].impulse, ptr1, ampqualities[params->impulse_quality].quality) / 32.f;
+        out = convolve(ampmodels[params->impulse_model].impulse, ptr1, ampqualities[params->impulse_quality].quality) / 32.f;
+        out /= MAX_SAMPLE;
+        db->data_swap[i] = out;
 
         params->bufidx[curr_channel] -= 1;
         if (params->bufidx[curr_channel] < 0)
