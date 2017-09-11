@@ -612,8 +612,8 @@ tubeamp_filter(struct effect *p, data_block_t *db)
         
         /* convolve the output. We put two buffers side-by-side to avoid & in loop. */
         ptr1[IMPULSE_SIZE] = ptr1[0] = result / 500.f * (float) (MAX_SAMPLE >> 13);
-        db->data[i] = convolve(ampmodels[params->impulse_model].impulse, ptr1, ampqualities[params->impulse_quality].quality) / 32.f;
-        
+        db->data_swap[i] = convolve(ampmodels[params->impulse_model].impulse, ptr1, ampqualities[params->impulse_quality].quality) / 32.f;
+
         params->bufidx[curr_channel] -= 1;
         if (params->bufidx[curr_channel] < 0)
             params->bufidx[curr_channel] += IMPULSE_SIZE;
@@ -697,6 +697,7 @@ tubeamp_create()
 
     params->tone_bass = +3; /* dB */
     params->tone_middle = -10; /* dB */
+    params->tone_treble = 0;
 
     /* configure the various stages */
     params->r_i[0] = 68e3 / 3000;
