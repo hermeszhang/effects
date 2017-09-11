@@ -14,6 +14,8 @@ int main(int argc, const char **argv) {
   float in[256];
   float out[256];
 
+  memset(in, 0, sizeof(in));
+
   for (i = 1; i < argc; i++) {
     if ((strcmp(argv[i], "-h") == 0)
      || (strcmp(argv[i], "--help") == 0)) {
