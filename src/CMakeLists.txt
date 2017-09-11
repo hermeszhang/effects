@@ -26,7 +26,10 @@ add_library("gnu-guitar-effects-test"
 
 function (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
   add_executable(${TEST_NAME} ${ARGN} $<TARGET_OBJECTS:gnu-guitar-effects>)
-  target_link_libraries(${TEST_NAME} "m" "gnu-guitar-effects-test")
+  target_link_libraries(${TEST_NAME} "gnu-guitar-effects-test")
+  if (UNIX)
+    target_link_libraries(${TEST_NAME} "m")
+  endif (UNIX)
   add_test(${TEST_NAME} ${TEST_NAME})
 endfunction (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
 
