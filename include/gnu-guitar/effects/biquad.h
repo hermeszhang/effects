@@ -237,22 +237,22 @@ typedef struct {
 /* Fs = sampling rate, Fc = center frequency, BW = bandwidth (octaves),
  * G = gain (dB), ripple = 0=butterw, 1-100=cheb (s-domain ellipticity %),
  * delay = unitless 0 .. 1, lowpass = flag whether cheb is lowpass filter */
-void     set_peq_biquad(const double Fs, const double Fc, const double BW, const double G, Biquad_t *f);
-void     set_bpf_biquad(const double Fs, const double Fc, const double BW, Biquad_t *f);
-void     set_lpf_biquad(const double Fs, const double Fc, const double BW, Biquad_t *f);
-void     set_phaser_biquad(const double delay, Biquad_t *f);
-void     set_2nd_allpass_biquad(const double delay, Biquad_t *f);
-void     set_rc_lowpass_biquad(const double Fs, const double Fc, Biquad_t *f);
-void     set_rc_highpass_biquad(const double Fs, const double Fc, Biquad_t *f);
-void     set_lsh_biquad(const double Fs, const double Fc, const double G, Biquad_t *f);
-void     set_hsh_biquad(const double Fs, const double Fc, const double G, Biquad_t *f);
+void     set_peq_biquad(double Fs, double Fc, double BW, const double G, Biquad_t *f);
+void     set_bpf_biquad(double Fs, double Fc, double BW, Biquad_t *f);
+void     set_lpf_biquad(double Fs, double Fc, double BW, Biquad_t *f);
+void     set_phaser_biquad(double delay, Biquad_t *f);
+void     set_2nd_allpass_biquad(double delay, Biquad_t *f);
+void     set_rc_lowpass_biquad(double Fs, double Fc, Biquad_t *f);
+void     set_rc_highpass_biquad(double Fs, double Fc, Biquad_t *f);
+void     set_lsh_biquad(double Fs, double Fc, double G, Biquad_t *f);
+void     set_hsh_biquad(double Fs, double Fc, double G, Biquad_t *f);
 void     set_chebyshev1_biquad(double Fs, double Fc, double ripple,
 			       int lowpass, Biquad_t *f);
 
-void     hilbert_transform(const DSP_SAMPLE in, DSP_SAMPLE *x0, DSP_SAMPLE *x1, Hilbert_t *h, const int curr_channel);
+void     hilbert_transform(DSP_SAMPLE in, DSP_SAMPLE *x0, DSP_SAMPLE *x1, Hilbert_t *h, int curr_channel);
 void     hilbert_init(Hilbert_t *h);
-void     fir_interpolate_2x(DSP_SAMPLE *mem, const DSP_SAMPLE in, DSP_SAMPLE *o1, DSP_SAMPLE *o2);
-DSP_SAMPLE fir_decimate_2x(DSP_SAMPLE *mem, const DSP_SAMPLE in1, const DSP_SAMPLE in2);
+void     fir_interpolate_2x(DSP_SAMPLE *mem, DSP_SAMPLE in, DSP_SAMPLE *o1, DSP_SAMPLE *o2);
+DSP_SAMPLE fir_decimate_2x(DSP_SAMPLE *mem, DSP_SAMPLE in1, DSP_SAMPLE in2);
 
 #if defined(__SSE__)
 
@@ -260,7 +260,7 @@ static inline float
 #ifdef __GNUC__
 __attribute__ ((nonnull(2)))
 #endif
-do_biquad(const float x, Biquad_t *f, const int c)
+do_biquad(float x, Biquad_t *f, int c)
 {
     __m128          r;
     float          *mem = f->mem[c], y;
@@ -306,7 +306,7 @@ static inline float
 #ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
 #endif
-convolve(const float *a, const float *b, const int len)
+convolve(const float *a, const float *b, int len)
 {
     __m128 r = { 0, 0, 0, 0 };
     __m128 *a4 = (__m128 *) a;
@@ -352,7 +352,7 @@ static inline float
 #ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
 #endif
-convolve_aligned (const float *a, const float *b, const int len)
+convolve_aligned (const float *a, const float *b, int len)
 {
     __m128 r = { 0, 0, 0, 0 };
     __m128 *a4 = (__m128 *) a;
@@ -395,7 +395,7 @@ static inline float
 #ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
 #endif
-convolve(const DSP_SAMPLE *a, const DSP_SAMPLE *b, const int len)
+convolve(const DSP_SAMPLE *a, const DSP_SAMPLE *b, int len)
 {
     int i;
     /* a long int type would be needed to hold the value in integer dsp */
@@ -409,7 +409,7 @@ static inline float
 #ifdef __GNUC__
 __attribute__ ((nonnull(1, 2)))
 #endif
-convolve_aligned(const DSP_SAMPLE *a, const DSP_SAMPLE *b, const int len)
+convolve_aligned(const DSP_SAMPLE *a, const DSP_SAMPLE *b, int len)
 {
     return convolve(a, b, len);
 }
@@ -418,7 +418,7 @@ static inline float
 #ifdef __GNUC__
 __attribute__ ((nonnull(2)))
 #endif
-do_biquad(const float x, Biquad_t *f, const int c)
+do_biquad(float x, Biquad_t *f, int c)
 {
     float *mem = f->mem[c], y;
     y = x * f->b0 + mem[0] * f->b[0] + mem[1] * f->b[1]
