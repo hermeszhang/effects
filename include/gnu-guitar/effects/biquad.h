@@ -237,7 +237,7 @@ typedef struct {
 /* Fs = sampling rate, Fc = center frequency, BW = bandwidth (octaves),
  * G = gain (dB), ripple = 0=butterw, 1-100=cheb (s-domain ellipticity %),
  * delay = unitless 0 .. 1, lowpass = flag whether cheb is lowpass filter */
-void     set_peq_biquad(double Fs, double Fc, double BW, const double G, Biquad_t *f);
+void     set_peq_biquad(double Fs, double Fc, double BW, double G, Biquad_t *f);
 void     set_bpf_biquad(double Fs, double Fc, double BW, Biquad_t *f);
 void     set_lpf_biquad(double Fs, double Fc, double BW, Biquad_t *f);
 void     set_phaser_biquad(double delay, Biquad_t *f);
