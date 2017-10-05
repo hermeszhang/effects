@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+cmake_policy(SET CMP0054 NEW)
+
 project("gnu-guitar-effects")
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
