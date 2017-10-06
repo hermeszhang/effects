@@ -99,8 +99,8 @@ static LADSPA_PortRangeHint port_range_hints[] = {
   },
   /* Speed */ {
     LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE | LADSPA_HINT_DEFAULT_MIDDLE,
-    0 /* LowerBound */,
-    100 /* UpperBound */
+    20 /* LowerBound */,
+    2000 /* UpperBound */
   },
   /* Phase */ {
     LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE | LADSPA_HINT_DEFAULT_MIDDLE,
