@@ -1,8 +1,10 @@
-/*
- * GNUitar
+/* GNU Guitar Effects
+ *
  * Common definitions for all effects.
- * Copyright (C) 2000,2001,2003 Max Rudensky         <fonin@ziet.zhitomir.ua>
- *           (c) 2005,2006 Antti S. Lankila          <alankila@bel.fi>
+ *
+ * Copyright (c) 2000,2001,2003 Max Rudensky <fonin@ziet.zhitomir.ua>
+ *           (c) 2005,2006 Antti S. Lankila  <alankila@bel.fi>
+ *           (c) 2017      Taylor Holberton  <taylorcholberton@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +19,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * $Id$
  */
 
-#ifndef _EFFECT_H_
-#define _EFFECT_H_ 1
+#ifndef GNU_GUITAR_EFFECTS_EFFECT_H
+#define GNU_GUITAR_EFFECTS_EFFECT_H
 
 #define MAX_EFFECTS 50
 
@@ -48,6 +48,8 @@ struct effect {
 typedef struct effect effect_t;
 
 typedef struct effect gnu_guitar_effect_t;
+
+void gnu_guitar_effect_init(gnu_guitar_effect_t *effect);
 
 void gnu_guitar_effect_filter(gnu_guitar_effect_t *effect,
                               struct gnu_guitar_packet *packet);
@@ -173,4 +175,4 @@ int effect_find(const effect_t *effect);
 void effect_destroy(effect_t *effect);
 effect_t *effect_delete(const int idx);
 
-#endif
+#endif /* GNU_GUITAR_EFFECTS_EFFECT_H */
