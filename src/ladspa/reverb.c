@@ -14,9 +14,6 @@ struct ladspa_data {
   /** @brief Contains audio input and
    * output pointers and such. */
   data_block_t db;
-  /** @brief The sample rate of the
-   * audio. */
-  unsigned long int sample_rate;
   float *delay;
   /** @brief Volume of each consecutive
    * reverb is reduced by this factor. */
@@ -61,7 +58,7 @@ static LADSPA_Handle reverb_instantiate(const LADSPA_Descriptor *descriptor, uns
     data->delay = NULL;
     data->decay = NULL;
     data->dry_wet_balance = NULL;
-    data->sample_rate = sample_rate;
+    data->db.rate = sample_rate;
     data->db.len = 0;
     data->db.channels = 1;
     data->effect = reverb_create();

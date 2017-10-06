@@ -1,7 +1,6 @@
-/*
- * GNUitar
+/* GNU Guitar
  * Tremolo effect
- * Copyright (C) 2000,2001,2003 Max Rudensky         <fonin@ziet.zhitomir.ua>
+ * Copyright (C) 2000,2001,2003 Max Rudensky <fonin@ziet.zhitomir.ua>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +19,25 @@
  * $Id$
  */
 
-#ifndef _TREMOLO_H_
-#define _TREMOLO_H_ 1
+#ifndef GNU_GUITAR_EFFECTS_TREMOLO_H
+#define GNU_GUITAR_EFFECTS_TREMOLO_H
 
-#include "effect.h"
+#include <gnu-guitar/effects/effect.h>
 
-effect_t *   tremolo_create(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+effect_t *tremolo_create(void);
 
 struct tremolo_params {
-    float	    tremolo_amplitude,
-                    tremolo_speed,
-                    tremolo_phase;
+    float tremolo_amplitude;
+    float tremolo_speed;
+    float tremolo_phase;
 };
 
+#ifdef __cplusplus
+} /* extern "C" { */
 #endif
+
+#endif /* GNU_GUITAR_EFFECTS_TREMOLO_H */

@@ -14,9 +14,6 @@ struct ladspa_data {
   /** @brief Contains audio input and
    * output pointers and such. */
   data_block_t db;
-  /** @brief The sample rate of the
-   * audio. */
-  unsigned long int sample_rate;
   /** @brief The number of echos. */
   float *echo_count;
   /** @brief Volume of each consecutive
@@ -62,7 +59,7 @@ static LADSPA_Handle echo_instantiate(const LADSPA_Descriptor *descriptor, unsig
     data->echo_count = NULL;
     data->echo_decay = NULL;
     data->echo_time = NULL;
-    data->sample_rate = sample_rate;
+    data->db.rate = sample_rate;
     data->db.len = 0;
     data->db.channels = 1;
     data->effect = echo_create();

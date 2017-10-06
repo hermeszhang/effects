@@ -9,6 +9,8 @@ add_library("gnu-guitar-effects" OBJECT
   "${SRCDIR}/backbuf.c"
   "${INCDIR}/biquad.h"
   "${SRCDIR}/biquad.c"
+  "${INCDIR}/tremolo.h"
+  "${SRCDIR}/tremolo.c"
   "${INCDIR}/echo.h"
   "${SRCDIR}/echo.c"
   "${INCDIR}/effect.h"

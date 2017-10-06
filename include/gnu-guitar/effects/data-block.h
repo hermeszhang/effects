@@ -62,6 +62,8 @@ struct gnu_guitar_packet {
   /** @brief Number of frames in the
    * data buffers. */
   uint_fast32_t len;
+  /** Number of frames per second. */
+  uint_fast32_t rate;
   /** @brief Number of samples per frame. */
   uint_fast8_t channels;
 };

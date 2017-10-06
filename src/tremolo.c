@@ -117,155 +117,55 @@
  *
  */
 
-#include "tremolo.h"
+#include <gnu-guitar/effects/tremolo.h>
+
 #include <math.h>
 #include <stdlib.h>
+
 #ifndef _WIN32
-#    include <unistd.h>
+#include <unistd.h>
 #else
-#    include <io.h>
+#include <io.h>
 #endif
-#include "utils.h"
-#include "gui.h"
-
-static void
-update_tremolo_speed(GtkAdjustment * adj, struct tremolo_params *params)
-{
-    params->tremolo_speed = adj->value;
-}
-
-static void
-update_tremolo_amplitude(GtkAdjustment * adj,
-			 struct tremolo_params *params)
-{
-    params->tremolo_amplitude = adj->value;
-}
 
 static void
 tremolo_init(struct effect *p)
 {
-    struct tremolo_params *ptremolo;
-
-    GtkWidget      *speed;
-    GtkWidget      *speed_label;
-    GtkObject      *adj_speed;
-
-    GtkWidget      *ampl;
-    GtkWidget      *ampl_label;
-    GtkObject      *adj_ampl;
-
-    GtkWidget      *button;
-
-    GtkWidget      *parmTable;
-
-    ptremolo = (struct tremolo_params *) p->params;
-
-
-    /*
-     * GUI Init
-     */
-    p->control = gtk_window_new(GTK_WINDOW_DIALOG);
-
-    gtk_signal_connect(GTK_OBJECT(p->control), "delete_event",
-		       GTK_SIGNAL_FUNC(delete_event), p);
-
-    parmTable = gtk_table_new(2, 8, FALSE);
-
-    adj_speed = gtk_adjustment_new(ptremolo->tremolo_speed,
-				   20.0, 2000.0, 1.0,
-				   1.0, 0.0);
-    speed_label = gtk_label_new("Period\nms");
-    gtk_table_attach(GTK_TABLE(parmTable), speed_label, 0, 1, 0, 1,
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_speed), "value_changed",
-		       GTK_SIGNAL_FUNC(update_tremolo_speed), ptremolo);
-
-    speed = gtk_vscale_new(GTK_ADJUSTMENT(adj_speed));
-    gtk_widget_set_size_request(GTK_WIDGET(speed),0,100);
-
-    gtk_table_attach(GTK_TABLE(parmTable), speed, 0, 1, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-    adj_ampl = gtk_adjustment_new(ptremolo->tremolo_amplitude,
-				  0.0, 100.0, 1.0, 1.0, 0.0);
-    ampl_label = gtk_label_new("Amplitude\n%");
-    gtk_table_attach(GTK_TABLE(parmTable), ampl_label, 3, 4, 0, 1,
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK),
-		     __GTKATTACHOPTIONS(GTK_FILL | GTK_EXPAND |
-					GTK_SHRINK), 0, 0);
-
-
-    gtk_signal_connect(GTK_OBJECT(adj_ampl), "value_changed",
-		       GTK_SIGNAL_FUNC(update_tremolo_amplitude),
-		       ptremolo);
-
-    ampl = gtk_vscale_new(GTK_ADJUSTMENT(adj_ampl));
-
-    gtk_table_attach(GTK_TABLE(parmTable), ampl, 3, 4, 1, 2,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-
-    button = gtk_check_button_new_with_label("On");
-    gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		       GTK_SIGNAL_FUNC(toggle_effect), p);
-
-    gtk_table_attach(GTK_TABLE(parmTable), button, 3, 4, 2, 3,
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK),
-		     __GTKATTACHOPTIONS
-		     (GTK_FILL | GTK_EXPAND | GTK_SHRINK), 0, 0);
-    if (p->toggle == 1) {
-	p->toggle = 0;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
-    }
-
-    gtk_window_set_title(GTK_WINDOW(p->control), (gchar *) ("Tremolo"));
-    gtk_container_add(GTK_CONTAINER(p->control), parmTable);
-
-    gtk_widget_show_all(p->control);
-
+    (void) p;
 }
 
 static void
 tremolo_filter(struct effect *p, data_block_t *db)
 {
     struct tremolo_params *tp;
-    double          vol, speed;
-    int             count,
-                    currchannel = 0;
-    DSP_SAMPLE     *s;
+    double vol;
+    double speed;
+    int count;
+    int currchannel = 0;
+    DSP_SAMPLE *s;
 
     tp = p->params;
     s = db->data;
     count = db->len;
     
-    speed = tp->tremolo_speed / 1000.0 * sample_rate;
+    speed = tp->tremolo_speed / 1000.0 * db->rate;
     
     while (count) {
-	if (tp->tremolo_phase >= speed)
-	    tp->tremolo_phase = 0;
 
-	vol = 1.0 - tp->tremolo_amplitude / 100.0 *
-	    (1.0 + sin_lookup(tp->tremolo_phase / speed)) / 2.0;
-	*s *= vol;
+        if (tp->tremolo_phase >= speed)
+            tp->tremolo_phase = 0;
 
-	currchannel = (currchannel + 1) % db->channels;
-	if (currchannel == 0)
-	    tp->tremolo_phase++;
+        vol = 1.0 - tp->tremolo_amplitude / 100.0 *
+            (1.0 + sin(tp->tremolo_phase / speed)) / 2.0;
 
-	s++;
-	count--;
+        *s *= vol;
+
+        currchannel = (currchannel + 1) % db->channels;
+        if (currchannel == 0)
+            tp->tremolo_phase++;
+
+        s++;
+        count--;
     }
 }
 
@@ -274,41 +174,19 @@ tremolo_done(struct effect *p)
 {
     struct tremolo_params *tp;
     tp = (struct tremolo_params *) p->params;
-
     free(tp);
-    gtk_widget_destroy(p->control);
     free(p);
-}
-
-static void
-tremolo_save(struct effect *p, SAVE_ARGS)
-{
-    struct tremolo_params *params = p->params;
-
-    SAVE_DOUBLE("tremolo_amplitude", params->tremolo_amplitude);
-    SAVE_DOUBLE("tremolo_speed", params->tremolo_speed);
-}
-
-static void
-tremolo_load(struct effect *p, LOAD_ARGS)
-{
-    struct tremolo_params *params = p->params;
-
-    LOAD_DOUBLE("tremolo_amplitude", params->tremolo_amplitude);
-    LOAD_DOUBLE("tremolo_speed", params->tremolo_speed);
 }
 
 effect_t *
 tremolo_create()
 {
-    effect_t       *p;
+    effect_t *p;
     struct tremolo_params *ptremolo;
 
     p = calloc(1, sizeof(effect_t));
     p->params = calloc(1, sizeof(struct tremolo_params));
     p->proc_init = tremolo_init;
-    p->proc_load = tremolo_load;
-    p->proc_save = tremolo_save;
     p->proc_filter = tremolo_filter;
     p->toggle = 0;
     p->proc_done = tremolo_done;

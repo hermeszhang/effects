@@ -13,9 +13,6 @@ struct ladspa_data {
   /** @brief Contains audio input and
    * output pointers and such. */
   data_block_t db;
-  /** @brief The sample rate of the
-   * audio. */
-  unsigned long int sample_rate;
   float *stages;
   /* TODO : impulse model */
   float *impulse_quality;
@@ -74,7 +71,7 @@ static LADSPA_Handle tubeamp_instantiate(const LADSPA_Descriptor *descriptor, un
   struct ladspa_data *data = NULL;
   if (descriptor == &tubeamp_descriptor) {
     data = malloc(sizeof(*data));
-    data->sample_rate = sample_rate;
+    data->db.rate = sample_rate;
     data->db.len = 0;
     data->db.channels = 1;
     data->stages = NULL;
