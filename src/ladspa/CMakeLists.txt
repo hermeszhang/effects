@@ -5,6 +5,7 @@ add_library("gnu-guitar-ladspa" SHARED
   "ladspa-descriptor.c"
   "echo.c"
   "reverb.c"
+  "tremolo.c"
   "tubeamp.c")
 
 set_target_properties("gnu-guitar-ladspa" PROPERTIES PREFIX "")
