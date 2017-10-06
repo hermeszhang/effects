@@ -1,4 +1,4 @@
-#include "test.h"
+#include "bench.h"
 
 #include <gnu-guitar/effects/tubeamp.h>
 

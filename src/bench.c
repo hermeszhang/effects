@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "test.h"
+#include "bench.h"
 
 #ifdef __unix__
 #include <time.h>

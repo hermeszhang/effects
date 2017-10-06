@@ -22,23 +22,23 @@ add_library("gnu-guitar-effects" OBJECT
   "${INCDIR}/tubeamp.h"
   "${SRCDIR}/tubeamp.c")
 
-add_library("gnu-guitar-effects-test"
-  "test.h"
-  "test.c")
+add_library("gnu-guitar-effects-bench"
+  "bench.h"
+  "bench.c")
 
-function (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
-  add_executable(${TEST_NAME} ${ARGN} $<TARGET_OBJECTS:gnu-guitar-effects>)
-  target_link_libraries(${TEST_NAME} "gnu-guitar-effects-test")
+function (ADD_GNU_GUITAR_EFFECTS_BENCH BENCH_NAME)
+  add_executable(${BENCH_NAME} ${ARGN} $<TARGET_OBJECTS:gnu-guitar-effects>)
+  target_link_libraries(${BENCH_NAME} "gnu-guitar-effects-bench")
   if (UNIX)
-    target_link_libraries(${TEST_NAME} "m")
+    target_link_libraries(${BENCH_NAME} "m")
   endif (UNIX)
-  add_test(${TEST_NAME} ${TEST_NAME})
-endfunction (ADD_GNU_GUITAR_EFFECTS_TEST TEST_NAME)
+  add_test(${BENCH_NAME} ${BENCH_NAME})
+endfunction (ADD_GNU_GUITAR_EFFECTS_BENCH BENCH_NAME)
 
-add_gnu_guitar_effects_test("echo-test" "echo-test.c")
-add_gnu_guitar_effects_test("reverb-test" "reverb-test.c")
-add_gnu_guitar_effects_test("tremolo-test" "tremolo-test.c")
-add_gnu_guitar_effects_test("tubeamp-test" "tubeamp-test.c")
+add_gnu_guitar_effects_bench("echo-bench" "echo-bench.c")
+add_gnu_guitar_effects_bench("reverb-bench" "reverb-bench.c")
+add_gnu_guitar_effects_bench("tremolo-bench" "tremolo-bench.c")
+add_gnu_guitar_effects_bench("tubeamp-bench" "tubeamp-bench.c")
 
 enable_testing()
 
